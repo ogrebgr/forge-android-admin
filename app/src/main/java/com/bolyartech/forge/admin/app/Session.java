@@ -29,12 +29,12 @@ public interface Session {
 
     class Info {
         private final long mUserId;
-        private String mScreenName;
+        private final boolean mSuperAdmin;
 
 
-        public Info(long userId, String screenName) {
+        public Info(long userId, boolean superAdmin) {
             mUserId = userId;
-            mScreenName = screenName;
+            mSuperAdmin = superAdmin;
         }
 
 
@@ -43,24 +43,14 @@ public interface Session {
         }
 
 
-        public void setScreenName(String screenName) {
-            mScreenName = screenName;
-        }
-
-
-        public String getScreenName() {
-            return mScreenName;
-        }
-
-
-        public boolean hasScreenName() {
-            return StringUtils.isNotEmpty(mScreenName);
+        public boolean isSuperAdmin() {
+            return mSuperAdmin;
         }
 
 
         public static Info fromJson(@NonNull JSONObject jobj) throws JSONException {
             return new Info(jobj.getLong("user_id"),
-                            jobj.getString("screen_name")
+                            jobj.getBoolean("super_admin")
                             );
         }
     }

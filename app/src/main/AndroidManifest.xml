@@ -7,7 +7,7 @@
 
     <application
         android:name=".app.App"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -27,6 +27,8 @@
         <activity
             android:name=".units.admin_users_list.Act_AdminUsersList"
             android:label="@string/act__admin_users_list__title">
+        </activity>
+        <activity android:name=".units.admin_user_manage.Act_AdminUserManage">
         </activity>
     </application>
 

@@ -17,6 +17,7 @@ import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.DoesLogin;
 import com.bolyartech.forge.admin.units.admin_users_list.Act_AdminUsersList;
+import com.bolyartech.forge.admin.units.login.Act_Login;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
 import com.bolyartech.forge.android.app_unit.StateChangedEvent;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
@@ -96,6 +97,10 @@ public class Act_Main extends SessionActivity implements DoesLogin, Df_CommWait.
 
         if (getSession().isLoggedIn()) {
             menu.findItem(R.id.ab_logout).setVisible(true);
+            menu.findItem(R.id.ab_login_as).setVisible(false);
+        } else {
+            menu.findItem(R.id.ab_logout).setVisible(false);
+            menu.findItem(R.id.ab_login_as).setVisible(true);
         }
 
         return true;
@@ -108,6 +113,9 @@ public class Act_Main extends SessionActivity implements DoesLogin, Df_CommWait.
 
         if (id == R.id.ab_logout) {
             mResident.logout();
+        } else if (id == R.id.ab_login_as) {
+            Intent intent = new Intent(Act_Main.this, Act_Login.class);
+            startActivity(intent);
         }
 
 

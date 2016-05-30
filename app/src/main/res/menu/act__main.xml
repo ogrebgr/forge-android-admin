@@ -2,6 +2,12 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       >
     <item
+        android:id="@+id/ab_login_as"
+        android:orderInCategory="200"
+        android:title="@string/act__main__mi_login_as_different"
+        android:visible="false"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/ab_logout"
         android:orderInCategory="200"
         android:title="@string/act__main__mi_logout"

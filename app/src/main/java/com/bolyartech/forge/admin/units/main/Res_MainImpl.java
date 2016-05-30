@@ -168,8 +168,10 @@ public class Res_MainImpl extends SessionResidentComponent implements Res_Main {
                             JSONObject jobj = new JSONObject(result.getPayload());
                             JSONObject sessionInfo = jobj.optJSONObject("session_info");
                             if (sessionInfo != null) {
+                                Session.Info info = Session.Info.fromJson(sessionInfo);
+
                                 int sessionTtl = jobj.getInt("session_ttl");
-                                getSession().startSession(sessionTtl, Session.Info.fromJson(sessionInfo));
+                                getSession().startSession(sessionTtl, info);
                                 mLogger.debug("App login OK");
 
                                 startSession();
