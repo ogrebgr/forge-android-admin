@@ -2,17 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/ab_refresh"
+        android:id="@+id/ab_disable"
         android:orderInCategory="200"
-        android:title="@string/global_mi_close"
+        android:title="@string/act__admin_user_manage__mi_disable"
         android:visible="true"
-        android:icon="@drawable/ic_action_refresh"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/ab_create"
+        android:id="@+id/ab_edit"
         android:orderInCategory="200"
-        android:title="@string/act__admin_user_list__mi_create"
+        android:title="@string/act__admin_user_manage__mi_edit"
         android:visible="true"
-        android:icon="@drawable/ic_action_new"
         app:showAsAction="ifRoom"/>
 </menu>

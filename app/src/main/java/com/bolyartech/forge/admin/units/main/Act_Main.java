@@ -125,7 +125,7 @@ public class Act_Main extends SessionActivity implements DoesLogin, Df_CommWait.
 
     @Override
     public void onCommWaitDialogCancelled() {
-
+        mResident.abortLogin();
     }
 
 

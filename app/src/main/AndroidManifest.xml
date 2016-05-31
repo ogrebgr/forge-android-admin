@@ -30,6 +30,8 @@
         </activity>
         <activity android:name=".units.admin_user_manage.Act_AdminUserManage">
         </activity>
+        <activity android:name=".units.admin_user_create.Act_AdminUserCreate">
+        </activity>
     </application>
 
 </manifest>

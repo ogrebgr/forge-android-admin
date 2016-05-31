@@ -7,6 +7,8 @@ import com.google.gson.annotations.SerializedName;
 
 
 public class AdminUser implements Parcelable {
+    public static final int MIN_PASSWORD_LENGTH = 7;
+
     @SerializedName("id")
     private final long mId;
     @SerializedName("username")
@@ -21,6 +23,10 @@ public class AdminUser implements Parcelable {
 
     public AdminUser(long id, String username, boolean isDisabled, boolean isSuperAdmin, String name) {
         mId = id;
+        if (!isValidUsername(username)) {
+            throw new IllegalArgumentException("Invalid username: " + username);
+        }
+
         mUsername = username;
         mIsDisabled = isDisabled;
         mIsSuperAdmin = isSuperAdmin;
@@ -86,4 +92,27 @@ public class AdminUser implements Parcelable {
             return new AdminUser[size];
         }
     };
+
+
+    public static boolean isValidPasswordLength(String password) {
+        if (password == null) {
+            throw new IllegalArgumentException("password is null");
+        }
+
+        return password.length() >= MIN_PASSWORD_LENGTH;
+    }
+
+
+    public static boolean isValidUsername(String username) {
+        return username.matches("^[a-zA-Z]{1}[a-zA-Z0-9 _.?]{1,48}[a-zA-Z0-9]{1}$");
+    }
+
+
+    public static boolean isValidName(String name) {
+        if (name == null) {
+            return false;
+        }
+
+        return name.matches("^[\\p{L}]{1}[\\p{L}\\p{N} ?]{1,33}[\\p{L}\\p{N}]{1}$");
+    }
 }

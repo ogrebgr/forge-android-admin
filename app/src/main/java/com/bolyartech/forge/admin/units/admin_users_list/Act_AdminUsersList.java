@@ -15,6 +15,7 @@ import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
+import com.bolyartech.forge.admin.units.admin_user_create.Act_AdminUserCreate;
 import com.bolyartech.forge.admin.units.admin_user_manage.Act_AdminUserManage;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
 import com.bolyartech.forge.android.app_unit.StateChangedEvent;
@@ -32,6 +33,7 @@ import javax.inject.Provider;
 public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.Listener {
     private final String PARAM_REFRESH = "refresh";
     private final int ACT_USER_MANAGE = 1;
+    private final int ACT_USER_CREATE = 2;
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
@@ -56,7 +58,11 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
 
         getDependencyInjector().inject(this);
 
-        initViews(getWindow().getDecorView());
+        if (getSession().getInfo().isSuperAdmin()) {
+            initViews(getWindow().getDecorView());
+        } else {
+            finish();
+        }
     }
 
 
@@ -159,6 +165,9 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
 
         if (id == R.id.ab_refresh) {
             mResident.loadAdminUsers();
+        } else if (id == R.id.ab_create) {
+            Intent intent = new Intent(Act_AdminUsersList.this, Act_AdminUserCreate.class);
+            startActivityForResult(intent, ACT_USER_CREATE);
         }
 
         return super.onOptionsItemSelected(item);
@@ -172,16 +181,26 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
         if (requestCode == ACT_USER_MANAGE) {
             if (resultCode == Activity.RESULT_OK) {
                 if (data.getBooleanExtra(PARAM_REFRESH, false)) {
-                    mOnResumePendingAction = new Runnable() {
-                        @Override
-                        public void run() {
-                            mOnResumePendingAction = null;
-                            mResident.loadAdminUsers();
-                        }
-                    };
+                    createPendingRefresh();
                 }
             }
+        } else if (requestCode == ACT_USER_CREATE && resultCode == Activity.RESULT_OK) {
+            createPendingRefresh();
         }
+    }
 
+
+    private void createPendingRefresh() {
+        if (mOnResumePendingAction == null) {
+            mOnResumePendingAction = new Runnable() {
+                @Override
+                public void run() {
+                    mOnResumePendingAction = null;
+                    mResident.loadAdminUsers();
+                }
+            };
+        } else {
+            throw new IllegalStateException("mOnResumePendingAction is not null");
+        }
     }
 }
