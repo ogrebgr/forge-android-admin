@@ -1,6 +1,8 @@
 package com.bolyartech.forge.admin.units.admin_user_manage;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,6 +15,7 @@ import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.DoesLogin;
+import com.bolyartech.forge.admin.units.admin_user_chpwd.Act_AdminUserChpwd;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
 import com.bolyartech.forge.android.app_unit.StateChangedEvent;
 import com.bolyartech.forge.android.misc.ActivityUtils;
@@ -26,6 +29,7 @@ import javax.inject.Provider;
 
 
 public class Act_AdminUserManage extends SessionActivity implements DoesLogin, Df_CommWait.Listener {
+    private static final int ACT_ADMIN_CHPWD = 1;
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
     public static String PARAM_USER = "user";
 
@@ -160,7 +164,6 @@ public class Act_AdminUserManage extends SessionActivity implements DoesLogin, D
             menu.findItem(R.id.ab_disable).setVisible(false);
         }
 
-
         return true;
     }
 
@@ -175,9 +178,19 @@ public class Act_AdminUserManage extends SessionActivity implements DoesLogin, D
             } else {
                 mResident.disableUser(mUser);
             }
+        } else if (id == R.id.ab_chpwd) {
+            Intent intent = new Intent(this, Act_AdminUserChpwd.class);
+            intent.putExtra(Act_AdminUserChpwd.PARAM_USER_ID, mUser.getId());
+            startActivityForResult(intent, ACT_ADMIN_CHPWD);
         }
 
-
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(PARAM_USER, mUser);
     }
 }

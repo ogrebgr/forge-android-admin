@@ -67,7 +67,7 @@
 
     <string name="act__admin_user_manage__mi_disable">Disable</string>
     <string name="act__admin_user_manage__mi_enable">Enable</string>
-    <string name="act__admin_user_manage__mi_edit">Edit</string>
+    <string name="act__admin_user_manage__mi_chpwd">Change password</string>
 
     <string name="act__admin_user_create__et_username">Username</string>
     <string name="act__admin_user_create__et_name">Name</string>

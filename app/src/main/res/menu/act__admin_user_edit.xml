@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/ab_save"
+        android:orderInCategory="200"
+        android:title="@string/act__admin_user_create__mi_save"
+        android:visible="true"
+        android:icon="@drawable/ic_action_accept"
+        app:showAsAction="always"/>
+</menu>

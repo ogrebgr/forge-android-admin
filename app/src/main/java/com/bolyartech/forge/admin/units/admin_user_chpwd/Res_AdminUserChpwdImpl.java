@@ -1,4 +1,4 @@
-package com.bolyartech.forge.admin.units.admin_user_create;
+package com.bolyartech.forge.admin.units.admin_user_chpwd;
 
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.ForgeExchangeHelper;
@@ -17,19 +17,16 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class Res_AdminUserCreateImpl extends SessionResidentComponent implements Res_AdminUserCreate {
+public class Res_AdminUserChpwdImpl extends SessionResidentComponent implements Res_AdminUserChpwd {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final StateManager<State> mStateManager;
-    private volatile Long mCreateXId;
+    private volatile Long mSaveXId;
     private int mLastError;
 
 
     @Inject
-    public Res_AdminUserCreateImpl(ForgeExchangeHelper forgeExchangeHelper,
-                                   Session session,
-                                   NetworkInfoProvider networkInfoProvider,
-                                   AndroidEventPoster androidEventPoster) {
+    public Res_AdminUserChpwdImpl(ForgeExchangeHelper forgeExchangeHelper, Session session, NetworkInfoProvider networkInfoProvider, AndroidEventPoster androidEventPoster) {
         super(forgeExchangeHelper, session, networkInfoProvider, androidEventPoster);
 
         mStateManager = new StateManagerImpl<>(androidEventPoster, State.IDLE);
@@ -49,23 +46,18 @@ public class Res_AdminUserCreateImpl extends SessionResidentComponent implements
 
 
     @Override
-    public void save(String username,
-                     String name,
-                     String password,
-                     boolean superAdmin) {
-
+    public void save(long userId, String password) {
         if (mStateManager.getState() == State.IDLE) {
             mLastError = 0;
             mStateManager.switchToState(State.SAVING);
-            ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("create_user");
-            b.addPostParameter("username", username);
-            b.addPostParameter("name", name);
-            b.addPostParameter("password", password);
-            b.addPostParameter("super_admin", superAdmin ? "1" : "0");
+
+            ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("change_password");
+            b.addPostParameter("user", Long.toString(userId));
+            b.addPostParameter("new_password", password);
 
             ForgeExchangeManager em = getForgeExchangeManager();
-            mCreateXId = em.generateTaskId();
-            em.executeExchange(b.build(), mCreateXId);
+            mSaveXId = em.generateTaskId();
+            em.executeExchange(b.build(), mSaveXId);
         } else {
             throw new IllegalStateException("Not in IDLE state");
         }
@@ -74,19 +66,19 @@ public class Res_AdminUserCreateImpl extends SessionResidentComponent implements
 
     @Override
     public int getLastError() {
-        return mLastError;
+        return  mLastError;
     }
 
 
     @Override
     public void onSessionExchangeOutcome(long exchangeId, boolean isSuccess, ForgeExchangeResult result) {
-        if (exchangeId == mCreateXId) {
-            handleCreateOutcome(isSuccess, result);
+        if (exchangeId == mSaveXId) {
+            handleSaveOutcome(isSuccess, result);
         }
     }
 
 
-    private void handleCreateOutcome(boolean isSuccess, ForgeExchangeResult result) {
+    private void handleSaveOutcome(boolean isSuccess, ForgeExchangeResult result) {
         if (isSuccess) {
             int code = result.getCode();
 

@@ -32,6 +32,8 @@
         </activity>
         <activity android:name=".units.admin_user_create.Act_AdminUserCreate">
         </activity>
+        <activity android:name=".units.admin_user_chpwd.Act_AdminUserChpwd">
+        </activity>
     </application>
 
 </manifest>
