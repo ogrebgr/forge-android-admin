@@ -1,16 +1,18 @@
-package com.bolyartech.forge.admin.units.admin_users_list;
+package com.bolyartech.forge.admin.units.user.users;
 
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.ForgeExchangeHelper;
 import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
 import com.bolyartech.forge.admin.data.AdminUser;
+import com.bolyartech.forge.admin.data.User;
 import com.bolyartech.forge.android.app_unit.StateManager;
 import com.bolyartech.forge.android.app_unit.StateManagerImpl;
 import com.bolyartech.forge.android.misc.AndroidEventPoster;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
+import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
 import com.bolyartech.forge.base.task.ForgeExchangeManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -24,28 +26,27 @@ import java.util.List;
 import javax.inject.Inject;
 
 
-public class Res_AdminUsersListImpl extends SessionResidentComponent implements Res_AdminUsersList {
+public class Res_UsersImpl extends SessionResidentComponent implements Res_Users {
+
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final StateManager<State> mStateManager;
 
-    private volatile long mLoadXId;
+    private volatile long mSearchXId;
 
-    private List<AdminUser> mData;
+    private List<User> mData;
     private Gson mGson;
 
 
     @Inject
-    public Res_AdminUsersListImpl(ForgeExchangeHelper forgeExchangeHelper,
-                                  Session session,
-                                  NetworkInfoProvider networkInfoProvider,
-                                  AndroidEventPoster androidEventPoster) {
-
-
+    public Res_UsersImpl(ForgeExchangeHelper forgeExchangeHelper,
+                         Session session,
+                         NetworkInfoProvider networkInfoProvider,
+                         AndroidEventPoster androidEventPoster) {
         super(forgeExchangeHelper, session, networkInfoProvider, androidEventPoster);
-        mStateManager = new StateManagerImpl<>(androidEventPoster, State.IDLE);
 
         mGson = new Gson();
+        mStateManager = new StateManagerImpl<>(androidEventPoster, State.IDLE);
     }
 
 
@@ -56,55 +57,49 @@ public class Res_AdminUsersListImpl extends SessionResidentComponent implements 
 
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-        loadAdminUsers();
-    }
-
-
-    @Override
-    public void loadAdminUsers() {
+    public void searchForUser(String pattern) {
         if (getState() == State.IDLE) {
-            mStateManager.switchToState(State.WAITING_DATA);
-            ForgeGetHttpExchangeBuilder b = createForgeGetHttpExchangeBuilder("users");
+            ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("user_find");
+            b.addPostParameter("pattern", pattern);
             ForgeExchangeManager em = getForgeExchangeManager();
-            mLoadXId = em.generateTaskId();
-            em.executeExchange(b.build(), mLoadXId);
+            mSearchXId = em.generateTaskId();
+            em.executeExchange(b.build(), mSearchXId);
         } else {
             throw new IllegalStateException("Not in IDLE state");
         }
     }
 
 
-
     @Override
-    public List<AdminUser> getData() {
+    public List<User> getData() {
         return mData;
     }
 
 
     @Override
-    public void reset() {
+    public void resetState() {
+        mData = null;
         mStateManager.reset();
     }
 
 
     @Override
     public void onSessionExchangeOutcome(long exchangeId, boolean isSuccess, ForgeExchangeResult result) {
-        if (exchangeId == mLoadXId) {
-            handleLoadUsers(isSuccess, result);
+        if (exchangeId == mSearchXId) {
+            handleSearchOutcome(isSuccess, result);
         }
     }
 
 
-    private void handleLoadUsers(boolean isSuccess, ForgeExchangeResult result) {
+    private void handleSearchOutcome(boolean isSuccess, ForgeExchangeResult result) {
         if (isSuccess) {
             int code = result.getCode();
 
             if (code > 0) {
                 if (code == BasicResponseCodes.Oks.OK.getCode()) {
-                    Type listType = new TypeToken<ArrayList<AdminUser>>(){}.getType();
+                    Type listType = new TypeToken<ArrayList<User>>(){}.getType();
                     mData = mGson.fromJson(result.getPayload(), listType);
+
                     mStateManager.switchToState(State.DATA_OK);
                 } else {
                     mStateManager.switchToState(State.DATA_FAIL);

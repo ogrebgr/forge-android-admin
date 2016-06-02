@@ -1,4 +1,4 @@
-package com.bolyartech.forge.admin.units.admin_users_list;
+package com.bolyartech.forge.admin.units.admin_user.admin_users_list;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,8 +15,8 @@ import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
-import com.bolyartech.forge.admin.units.admin_user_create.Act_AdminUserCreate;
-import com.bolyartech.forge.admin.units.admin_user_manage.Act_AdminUserManage;
+import com.bolyartech.forge.admin.units.admin_user.admin_user_create.Act_AdminUserCreate;
+import com.bolyartech.forge.admin.units.admin_user.admin_user_manage.Act_AdminUserManage;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
 import com.bolyartech.forge.android.app_unit.StateChangedEvent;
 import com.bolyartech.forge.android.misc.ViewUtils;
@@ -43,7 +43,7 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
     private Res_AdminUsersList mResident;
 
     private ListView mLvAdminUsers;
-    private AdminUserAdapter mAdminUserAdapter;
+    private AdminUsersAdapter mAdminUsersAdapter;
 
     private volatile Runnable mOnResumePendingAction;
 
@@ -107,6 +107,7 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
 
         switch (state) {
             case IDLE:
+                MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 break;
             case WAITING_DATA:
                 MyAppDialogs.showCommWaitDialog(getFragmentManager());
@@ -114,12 +115,12 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
             case DATA_OK:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 showData();
-                mResident.reset();
+                mResident.resetState();
                 break;
             case DATA_FAIL:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 MyAppDialogs.showCommProblemDialog(getFragmentManager());
-                mResident.reset();
+                mResident.resetState();
                 break;
         }
     }
@@ -127,13 +128,13 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
 
     private void showData() {
         List<AdminUser> users = mResident.getData();
-        if (mAdminUserAdapter == null) {
-            mAdminUserAdapter = new AdminUserAdapter(this, 1, users);
-            mLvAdminUsers.setAdapter(mAdminUserAdapter);
+        if (mAdminUsersAdapter == null) {
+            mAdminUsersAdapter = new AdminUsersAdapter(this, 1, users);
+            mLvAdminUsers.setAdapter(mAdminUsersAdapter);
         } else {
-            mAdminUserAdapter.clear();
-            mAdminUserAdapter.addAll(users);
-            mAdminUserAdapter.notifyDataSetChanged();
+            mAdminUsersAdapter.clear();
+            mAdminUsersAdapter.addAll(users);
+            mAdminUsersAdapter.notifyDataSetChanged();
         }
     }
 
@@ -146,7 +147,7 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
 
     @Override
     public void onCommWaitDialogCancelled() {
-        mResident.reset();
+        mResident.resetState();
         MyAppDialogs.hideCommWaitDialog(getFragmentManager());
     }
 

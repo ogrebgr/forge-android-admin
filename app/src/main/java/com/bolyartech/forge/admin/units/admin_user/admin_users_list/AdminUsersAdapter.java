@@ -1,4 +1,4 @@
-package com.bolyartech.forge.admin.units.admin_users_list;
+package com.bolyartech.forge.admin.units.admin_user.admin_users_list;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,10 +16,10 @@ import com.bolyartech.forge.android.misc.ViewUtils;
 import java.util.List;
 
 
-public class AdminUserAdapter extends ArrayAdapter<AdminUser> {
+public class AdminUsersAdapter extends ArrayAdapter<AdminUser> {
     private final Activity mActivity;
 
-    public AdminUserAdapter(Context context, int resource, List<AdminUser> objects) {
+    public AdminUsersAdapter(Context context, int resource, List<AdminUser> objects) {
         super(context, resource, objects);
         mActivity = (Activity) context;
     }

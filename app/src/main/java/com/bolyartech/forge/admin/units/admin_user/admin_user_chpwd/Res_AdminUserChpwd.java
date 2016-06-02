@@ -1,4 +1,4 @@
-package com.bolyartech.forge.admin.units.admin_user_chpwd;
+package com.bolyartech.forge.admin.units.admin_user.admin_user_chpwd;
 
 public interface Res_AdminUserChpwd {
     State getState();

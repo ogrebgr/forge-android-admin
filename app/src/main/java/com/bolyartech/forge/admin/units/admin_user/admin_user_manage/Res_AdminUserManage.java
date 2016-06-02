@@ -1,4 +1,4 @@
-package com.bolyartech.forge.admin.units.admin_user_manage;
+package com.bolyartech.forge.admin.units.admin_user.admin_user_manage;
 
 import com.bolyartech.forge.admin.data.AdminUser;
 

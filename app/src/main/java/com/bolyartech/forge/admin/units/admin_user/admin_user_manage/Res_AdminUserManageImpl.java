@@ -1,11 +1,10 @@
-package com.bolyartech.forge.admin.units.admin_user_manage;
+package com.bolyartech.forge.admin.units.admin_user.admin_user_manage;
 
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.ForgeExchangeHelper;
 import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
 import com.bolyartech.forge.admin.data.AdminUser;
-import com.bolyartech.forge.admin.units.main.Res_Main;
 import com.bolyartech.forge.android.app_unit.StateManager;
 import com.bolyartech.forge.android.app_unit.StateManagerImpl;
 import com.bolyartech.forge.android.misc.AndroidEventPoster;

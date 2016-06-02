@@ -7,7 +7,6 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.bolyartech.forge.admin.R;
@@ -16,8 +15,9 @@ import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.DoesLogin;
-import com.bolyartech.forge.admin.units.admin_users_list.Act_AdminUsersList;
+import com.bolyartech.forge.admin.units.admin_user.admin_users_list.Act_AdminUsersList;
 import com.bolyartech.forge.admin.units.login.Act_Login;
+import com.bolyartech.forge.admin.units.user.users.Act_Users;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
 import com.bolyartech.forge.android.app_unit.StateChangedEvent;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
@@ -38,7 +38,6 @@ public class Act_Main extends SessionActivity implements DoesLogin, Df_CommWait.
     private View mViewNoInet;
     private View mViewNotLoggedIn;
     private View mViewLoggedIn;
-    private Button mBtnLogin;
     private TextView mTvLoggedInAs;
 
     @Inject
@@ -74,7 +73,7 @@ public class Act_Main extends SessionActivity implements DoesLogin, Df_CommWait.
 
         mTvLoggedInAs = ViewUtils.findTextViewX(view, R.id.tv_logged_in_as);
 
-        mBtnLogin = ViewUtils.initButton(view, R.id.btn_login, new View.OnClickListener() {
+        ViewUtils.initButton(view, R.id.btn_login, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mResident.login();
@@ -85,6 +84,14 @@ public class Act_Main extends SessionActivity implements DoesLogin, Df_CommWait.
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Act_Main.this, Act_AdminUsersList.class);
+                startActivity(intent);
+            }
+        });
+
+        ViewUtils.initButton(view, R.id.btn_users, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Act_Main.this, Act_Users.class);
                 startActivity(intent);
             }
         });
@@ -206,7 +213,7 @@ public class Act_Main extends SessionActivity implements DoesLogin, Df_CommWait.
         mViewNotLoggedIn.setVisibility(View.VISIBLE);
         mViewLoggedIn.setVisibility(View.GONE);
 
-        mBtnLogin.setVisibility(View.VISIBLE);
+//        mBtnLogin.setVisibility(View.VISIBLE);
     }
 
 
@@ -215,7 +222,7 @@ public class Act_Main extends SessionActivity implements DoesLogin, Df_CommWait.
         mViewNotLoggedIn.setVisibility(View.GONE);
         mViewLoggedIn.setVisibility(View.VISIBLE);
 
-        mBtnLogin.setVisibility(View.GONE);
+//        mBtnLogin.setVisibility(View.GONE);
 
         mTvLoggedInAs.setText(Html.fromHtml(String.format(getString(R.string.act__main__tv_logged_in), mLoginPrefs.getUsername())));
     }

@@ -1,4 +1,4 @@
-package com.bolyartech.forge.admin.units.admin_users_list;
+package com.bolyartech.forge.admin.units.admin_user.admin_users_list;
 
 import com.bolyartech.forge.admin.data.AdminUser;
 
@@ -12,7 +12,7 @@ public interface Res_AdminUsersList {
 
     List<AdminUser> getData();
 
-    void reset();
+    void resetState();
 
     enum State {
         IDLE,

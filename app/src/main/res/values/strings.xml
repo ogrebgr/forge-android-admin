@@ -49,6 +49,7 @@
 
     <string name="act__main__mi_login_as_different">Login as different user</string>
     <string name="act__main__btn_admin_users">Admin users</string>
+    <string name="act__main__btn_users">Users</string>
 
 
     <string name="act__login__et_username_hint">Username</string>
@@ -82,4 +83,7 @@
     <string name="act__admin_user_create__err_password_too_short">Password is too short. Must be at least {} characters.</string>
     <string name="act__admin_user_create__err_passwords_dont_match">Passwords don\'t match.</string>
     <string name="act__admin_user_create__err_username_taken_msg">This username is already used for another user. Please choose a different one.</string>
+
+
+    <string name="act__users_btn_search">Search</string>
 </resources>

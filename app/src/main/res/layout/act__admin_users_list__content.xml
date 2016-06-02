@@ -11,7 +11,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.bolyartech.forge.admin.units.admin_users_list.Act_AdminUsersList">
+    tools:context=".units.admin_user.admin_users_list.Act_AdminUsersList">
 
     <ListView
         android:id="@+id/lv_admin_users"

@@ -1,4 +1,4 @@
-package com.bolyartech.forge.admin.units.admin_user_chpwd;
+package com.bolyartech.forge.admin.units.admin_user.admin_user_chpwd;
 
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.ForgeExchangeHelper;

@@ -1,4 +1,4 @@
-package com.bolyartech.forge.admin.units.admin_user_create;
+package com.bolyartech.forge.admin.units.admin_user.admin_user_create;
 
 import android.app.Activity;
 import android.os.Bundle;

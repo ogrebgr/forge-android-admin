@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".units.admin_user.admin_user_manage.Act_AdminUserManage">
+    tools:context=".units.user.users.Act_Users">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -22,5 +22,5 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/act__admin_user_manage__content"/>
+    <include layout="@layout/act__users__content"/>
 </android.support.design.widget.CoordinatorLayout>
