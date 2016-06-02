@@ -1,8 +1,11 @@
 package com.bolyartech.forge.admin.units.user.users;
 
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -11,6 +14,7 @@ import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.data.User;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
+import com.bolyartech.forge.admin.units.user.user_manage.Act_UserManage;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
 import com.bolyartech.forge.android.app_unit.StateChangedEvent;
 import com.bolyartech.forge.android.misc.ViewUtils;
@@ -67,6 +71,15 @@ public class Act_Users extends SessionActivity implements Df_CommWait.Listener {
         } else {
             runOnUiThread(mOnResumePendingAction);
         }
+
+        mLvUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(Act_Users.this, Act_UserManage.class);
+                intent.putExtra(Act_UserManage.PARAM_USER, (User) parent.getItemAtPosition(position));
+                startActivity(intent);
+            }
+        });
     }
 
 
@@ -103,6 +116,9 @@ public class Act_Users extends SessionActivity implements Df_CommWait.Listener {
             mUsersAdapter.notifyDataSetChanged();
         }
 
+        if (users.size() == 0) {
+            showNoUserFoundDialog(getFragmentManager());
+        }
     }
 
 
@@ -138,5 +154,13 @@ public class Act_Users extends SessionActivity implements Df_CommWait.Listener {
     @Subscribe
     public void onStateChangedEvent(StateChangedEvent ev) {
         handleState(mResident.getState());
+    }
+
+
+    public static void showNoUserFoundDialog(FragmentManager fm) {
+        if (fm.findFragmentByTag(Df_NoUserFound.DIALOG_TAG) == null) {
+            Df_NoUserFound fra = new Df_NoUserFound();
+            fra.show(fm, Df_NoUserFound.DIALOG_TAG);
+        }
     }
 }

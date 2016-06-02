@@ -8,6 +8,7 @@ import com.bolyartech.forge.admin.units.admin_user.admin_user_manage.Act_AdminUs
 import com.bolyartech.forge.admin.units.admin_user.admin_users_list.Act_AdminUsersList;
 import com.bolyartech.forge.admin.units.login.Act_Login;
 import com.bolyartech.forge.admin.units.main.Act_Main;
+import com.bolyartech.forge.admin.units.user.user_manage.Act_UserManage;
 import com.bolyartech.forge.admin.units.user.users.Act_Users;
 
 import javax.inject.Singleton;
@@ -36,4 +37,5 @@ public interface AppDaggerComponent {
     void inject(Act_AdminUserCreate act);
     void inject(Act_AdminUserChpwd act);
     void inject(Act_Users act);
+    void inject(Act_UserManage act);
 }

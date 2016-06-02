@@ -86,4 +86,14 @@
 
 
     <string name="act__users_btn_search">Search</string>
+
+    <string name="dlg__no_user_found_msg">No users found matching your criteria</string>
+
+    <string name="act__user_manage__tv_username">Username</string>
+    <string name="act__user_manage__tv_name">Name</string>
+    <string name="act__user_manage__tv_disabled">Disabled</string>
+
+    <string name="act__user_manage__mi_disable">Disable</string>
+    <string name="act__user_manage__mi_enable">Enable</string>
+
 </resources>

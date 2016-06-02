@@ -57,7 +57,7 @@ public class Res_AdminUserCreateImpl extends SessionResidentComponent implements
         if (mStateManager.getState() == State.IDLE) {
             mLastError = 0;
             mStateManager.switchToState(State.SAVING);
-            ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("create_user");
+            ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("create_admin_user");
             b.addPostParameter("username", username);
             b.addPostParameter("name", name);
             b.addPostParameter("password", password);

@@ -36,6 +36,8 @@
         </activity>
         <activity android:name=".units.user.users.Act_Users">
         </activity>
+        <activity android:name=".units.user.user_manage.Act_UserManage">
+        </activity>
     </application>
 
 </manifest>

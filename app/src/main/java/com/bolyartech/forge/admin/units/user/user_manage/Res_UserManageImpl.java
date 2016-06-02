@@ -1,16 +1,10 @@
-package com.bolyartech.forge.admin.units.admin_user.admin_user_manage;
+package com.bolyartech.forge.admin.units.user.user_manage;
 
-import android.content.Intent;
-import android.view.Menu;
-import android.view.MenuItem;
-
-import com.bolyartech.forge.admin.R;
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.ForgeExchangeHelper;
 import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
-import com.bolyartech.forge.admin.data.AdminUser;
-import com.bolyartech.forge.admin.units.admin_user.admin_user_chpwd.Act_AdminUserChpwd;
+import com.bolyartech.forge.admin.data.User;
 import com.bolyartech.forge.android.app_unit.StateManager;
 import com.bolyartech.forge.android.app_unit.StateManagerImpl;
 import com.bolyartech.forge.android.misc.AndroidEventPoster;
@@ -26,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class Res_AdminUserManageImpl extends SessionResidentComponent implements Res_AdminUserManage {
+public class Res_UserManageImpl extends SessionResidentComponent implements Res_UserManage {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final StateManager<State> mStateManager;
@@ -38,10 +32,10 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent implements
 
 
     @Inject
-    public Res_AdminUserManageImpl(ForgeExchangeHelper forgeExchangeHelper,
-                                   Session session,
-                                   NetworkInfoProvider networkInfoProvider,
-                                   AndroidEventPoster androidEventPoster) {
+    public Res_UserManageImpl(ForgeExchangeHelper forgeExchangeHelper,
+                              Session session,
+                              NetworkInfoProvider networkInfoProvider,
+                              AndroidEventPoster androidEventPoster) {
 
         super(forgeExchangeHelper, session, networkInfoProvider, androidEventPoster);
 
@@ -56,7 +50,7 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent implements
 
 
     @Override
-    public void disableUser(AdminUser user) {
+    public void disableUser(User user) {
         if (mStateManager.getState() == State.IDLE) {
             mStateManager.switchToState(State.DISABLING);
             disableEnable(user.getId(), true);
@@ -67,7 +61,7 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent implements
 
 
     private void disableEnable(long id, boolean disable) {
-        ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("admin_user_disable");
+        ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("user_disable");
         b.addPostParameter("user", Long.toString(id));
         b.addPostParameter("disable", disable ? "1" : "0");
 
@@ -78,7 +72,7 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent implements
 
 
     @Override
-    public void enableUser(AdminUser user) {
+    public void enableUser(User user) {
         if (mStateManager.getState() == State.IDLE) {
             mStateManager.switchToState(State.DISABLING);
             disableEnable(user.getId(), false);
@@ -89,8 +83,8 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent implements
 
 
     @Override
-    public void delete(AdminUser user) {
-
+    public boolean getDisableResult() {
+        return mDisableResult;
     }
 
 
@@ -98,13 +92,6 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent implements
     public void resetState() {
         mStateManager.reset();
     }
-
-
-    @Override
-    public boolean getDisableResult() {
-        return mDisableResult;
-    }
-
 
 
     @Override
