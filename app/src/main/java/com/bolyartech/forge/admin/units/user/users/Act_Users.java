@@ -35,7 +35,6 @@ public class Act_Users extends SessionActivity implements Df_CommWait.Listener {
 
     private Res_Users mResident;
 
-    private volatile Runnable mOnResumePendingAction;
     private UsersAdapter mUsersAdapter;
 
     private EditText mEtSearch;
@@ -66,11 +65,7 @@ public class Act_Users extends SessionActivity implements Df_CommWait.Listener {
 
         mResident = (Res_Users) getResidentComponent();
 
-        if (mOnResumePendingAction == null) {
-            handleState(mResident.getState());
-        } else {
-            runOnUiThread(mOnResumePendingAction);
-        }
+        handleState(mResident.getState());
 
         mLvUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
