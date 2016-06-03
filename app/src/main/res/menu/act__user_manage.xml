@@ -7,4 +7,10 @@
         android:title="@string/act__admin_user_manage__mi_disable"
         android:visible="true"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/ab_chpwd"
+        android:orderInCategory="200"
+        android:title="@string/act__admin_user_manage__mi_chpwd"
+        android:visible="true"
+        app:showAsAction="ifRoom"/>
 </menu>

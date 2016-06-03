@@ -38,6 +38,8 @@
         </activity>
         <activity android:name=".units.user.user_manage.Act_UserManage">
         </activity>
+        <activity android:name=".units.user.user_chpwd.Act_UserChpwd">
+        </activity>
     </application>
 
 </manifest>

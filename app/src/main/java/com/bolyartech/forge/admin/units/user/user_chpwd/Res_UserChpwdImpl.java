@@ -1,4 +1,4 @@
-package com.bolyartech.forge.admin.units.admin_user.admin_user_chpwd;
+package com.bolyartech.forge.admin.units.user.user_chpwd;
 
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.ForgeExchangeHelper;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class Res_AdminUserChpwdImpl extends SessionResidentComponent implements Res_AdminUserChpwd {
+public class Res_UserChpwdImpl extends SessionResidentComponent implements Res_UserChpwd {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final StateManager<State> mStateManager;
@@ -26,7 +26,7 @@ public class Res_AdminUserChpwdImpl extends SessionResidentComponent implements 
 
 
     @Inject
-    public Res_AdminUserChpwdImpl(ForgeExchangeHelper forgeExchangeHelper, Session session, NetworkInfoProvider networkInfoProvider, AndroidEventPoster androidEventPoster) {
+    public Res_UserChpwdImpl(ForgeExchangeHelper forgeExchangeHelper, Session session, NetworkInfoProvider networkInfoProvider, AndroidEventPoster androidEventPoster) {
         super(forgeExchangeHelper, session, networkInfoProvider, androidEventPoster);
 
         mStateManager = new StateManagerImpl<>(androidEventPoster, State.IDLE);
@@ -51,7 +51,7 @@ public class Res_AdminUserChpwdImpl extends SessionResidentComponent implements 
             mLastError = 0;
             mStateManager.switchToState(State.SAVING);
 
-            ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("change_admin_password");
+            ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("change_password");
             b.addPostParameter("user", Long.toString(userId));
             b.addPostParameter("new_password", password);
 

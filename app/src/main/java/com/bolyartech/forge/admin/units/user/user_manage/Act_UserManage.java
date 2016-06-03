@@ -1,5 +1,6 @@
 package com.bolyartech.forge.admin.units.user.user_manage;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -13,6 +14,7 @@ import com.bolyartech.forge.admin.data.User;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.DoesLogin;
+import com.bolyartech.forge.admin.units.user.user_chpwd.Act_UserChpwd;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
 import com.bolyartech.forge.android.app_unit.StateChangedEvent;
 import com.bolyartech.forge.android.misc.ActivityUtils;
@@ -172,6 +174,10 @@ public class Act_UserManage extends SessionActivity implements DoesLogin, Df_Com
             } else {
                 mResident.disableUser(mUser);
             }
+        } else if (id == R.id.ab_chpwd) {
+            Intent intent = new Intent(Act_UserManage.this, Act_UserChpwd.class);
+            intent.putExtra(Act_UserChpwd.PARAM_USER_ID, mUser.getId());
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
