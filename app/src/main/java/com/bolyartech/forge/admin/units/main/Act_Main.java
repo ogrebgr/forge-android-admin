@@ -76,7 +76,12 @@ public class Act_Main extends SessionActivity implements DoesLogin, Df_CommWait.
         ViewUtils.initButton(view, R.id.btn_login, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mResident.login();
+                if (mLoginPrefs.hasLoginCredentials()) {
+                    mResident.login();
+                } else {
+                    Intent intent = new Intent(Act_Main.this, Act_Login.class);
+                    startActivity(intent);
+                }
             }
         });
 
