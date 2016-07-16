@@ -156,6 +156,7 @@ public class Act_Users extends SessionActivity implements Df_CommWait.Listener {
         if (fm.findFragmentByTag(Df_NoUserFound.DIALOG_TAG) == null) {
             Df_NoUserFound fra = new Df_NoUserFound();
             fra.show(fm, Df_NoUserFound.DIALOG_TAG);
+            fm.executePendingTransactions();
         }
     }
 }
