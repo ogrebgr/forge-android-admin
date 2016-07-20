@@ -3,8 +3,6 @@ package com.bolyartech.forge.admin.app;
 
 import android.support.annotation.NonNull;
 
-import com.bolyartech.forge.base.misc.StringUtils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

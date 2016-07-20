@@ -7,7 +7,7 @@ import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
 import com.bolyartech.forge.android.app_unit.StateManager;
 import com.bolyartech.forge.android.app_unit.StateManagerImpl;
-import com.bolyartech.forge.android.misc.AndroidEventPoster;
+import com.bolyartech.forge.android.misc.EventPoster;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
@@ -37,11 +37,11 @@ public class Res_MainImpl extends SessionResidentComponent implements Res_Main {
     public Res_MainImpl(ForgeExchangeHelper forgeExchangeHelper,
                         Session session,
                         NetworkInfoProvider networkInfoProvider,
-                        AndroidEventPoster androidEventPoster,
+                        EventPoster eventPoster,
                         AppConfiguration appConfiguration) {
 
-        super(forgeExchangeHelper, session, networkInfoProvider, androidEventPoster);
-        mStateManager = new StateManagerImpl<>(androidEventPoster, State.IDLE);
+        super(forgeExchangeHelper, session, networkInfoProvider, eventPoster);
+        mStateManager = new StateManagerImpl<>(eventPoster, State.IDLE);
         mAppConfiguration = appConfiguration;
         mNetworkInfoProvider = networkInfoProvider;
     }

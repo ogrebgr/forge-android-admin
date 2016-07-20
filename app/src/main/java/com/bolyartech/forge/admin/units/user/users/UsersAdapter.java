@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bolyartech.forge.admin.R;
-import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.data.User;
 import com.bolyartech.forge.android.misc.ViewUtils;
 

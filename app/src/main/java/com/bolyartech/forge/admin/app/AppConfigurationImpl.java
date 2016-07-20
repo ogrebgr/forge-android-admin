@@ -1,10 +1,6 @@
 package com.bolyartech.forge.admin.app;
 
 
-import android.content.Context;
-
-import com.bolyartech.forge.admin.dagger.ForApplication;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 

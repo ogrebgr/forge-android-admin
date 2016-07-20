@@ -6,7 +6,7 @@ import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
 import com.bolyartech.forge.android.app_unit.StateManager;
 import com.bolyartech.forge.android.app_unit.StateManagerImpl;
-import com.bolyartech.forge.android.misc.AndroidEventPoster;
+import com.bolyartech.forge.android.misc.EventPoster;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
@@ -26,10 +26,14 @@ public class Res_UserChpwdImpl extends SessionResidentComponent implements Res_U
 
 
     @Inject
-    public Res_UserChpwdImpl(ForgeExchangeHelper forgeExchangeHelper, Session session, NetworkInfoProvider networkInfoProvider, AndroidEventPoster androidEventPoster) {
-        super(forgeExchangeHelper, session, networkInfoProvider, androidEventPoster);
+    public Res_UserChpwdImpl(ForgeExchangeHelper forgeExchangeHelper,
+                             Session session,
+                             NetworkInfoProvider networkInfoProvider,
+                             EventPoster eventPoster) {
 
-        mStateManager = new StateManagerImpl<>(androidEventPoster, State.IDLE);
+        super(forgeExchangeHelper, session, networkInfoProvider, eventPoster);
+
+        mStateManager = new StateManagerImpl<>(eventPoster, State.IDLE);
     }
 
 

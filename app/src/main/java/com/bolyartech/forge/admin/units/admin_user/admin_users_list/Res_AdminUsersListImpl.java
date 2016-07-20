@@ -7,7 +7,7 @@ import com.bolyartech.forge.admin.app.SessionResidentComponent;
 import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.android.app_unit.StateManager;
 import com.bolyartech.forge.android.app_unit.StateManagerImpl;
-import com.bolyartech.forge.android.misc.AndroidEventPoster;
+import com.bolyartech.forge.android.misc.EventPoster;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
@@ -39,11 +39,11 @@ public class Res_AdminUsersListImpl extends SessionResidentComponent implements 
     public Res_AdminUsersListImpl(ForgeExchangeHelper forgeExchangeHelper,
                                   Session session,
                                   NetworkInfoProvider networkInfoProvider,
-                                  AndroidEventPoster androidEventPoster) {
+                                  EventPoster eventPoster) {
 
 
-        super(forgeExchangeHelper, session, networkInfoProvider, androidEventPoster);
-        mStateManager = new StateManagerImpl<>(androidEventPoster, State.IDLE);
+        super(forgeExchangeHelper, session, networkInfoProvider, eventPoster);
+        mStateManager = new StateManagerImpl<>(eventPoster, State.IDLE);
 
         mGson = new Gson();
     }

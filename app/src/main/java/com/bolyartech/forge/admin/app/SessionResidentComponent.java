@@ -1,7 +1,7 @@
 package com.bolyartech.forge.admin.app;
 
 import com.bolyartech.forge.android.app_unit.AbstractResidentComponent;
-import com.bolyartech.forge.android.misc.AndroidEventPoster;
+import com.bolyartech.forge.android.misc.EventPoster;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.base.exchange.ExchangeOutcome;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
@@ -22,19 +22,19 @@ abstract public class SessionResidentComponent extends AbstractResidentComponent
     private final ForgeExchangeHelper mForgeExchangeHelper;
     private final Session mSession;
     private final NetworkInfoProvider mNetworkInfoProvider;
-    private final AndroidEventPoster mAndroidEventPoster;
+    private final EventPoster mAndroidEventPoster;
 
 
     public SessionResidentComponent(
                                     ForgeExchangeHelper forgeExchangeHelper,
                                     Session session,
                                     NetworkInfoProvider networkInfoProvider,
-                                    AndroidEventPoster androidEventPoster) {
+                                    EventPoster eventPoster) {
 
         mForgeExchangeHelper = forgeExchangeHelper;
         mSession = session;
         mNetworkInfoProvider = networkInfoProvider;
-        mAndroidEventPoster = androidEventPoster;
+        mAndroidEventPoster = eventPoster;
     }
 
 
