@@ -115,12 +115,12 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
             case DATA_OK:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 showData();
-                mResident.stateAcknowledged();
+                mResident.stateHandled();
                 break;
             case DATA_FAIL:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 MyAppDialogs.showCommProblemDialog(getFragmentManager());
-                mResident.stateAcknowledged();
+                mResident.stateHandled();
                 break;
         }
     }
@@ -147,7 +147,7 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
 
     @Override
     public void onCommWaitDialogCancelled() {
-        mResident.stateAcknowledged();
+        mResident.stateHandled();
         MyAppDialogs.hideCommWaitDialog(getFragmentManager());
     }
 

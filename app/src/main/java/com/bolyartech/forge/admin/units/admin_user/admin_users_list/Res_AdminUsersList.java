@@ -12,7 +12,7 @@ public interface Res_AdminUsersList {
 
     List<AdminUser> getData();
 
-    void stateAcknowledged();
+    void stateHandled();
 
     enum State {
         IDLE,

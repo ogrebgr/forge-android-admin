@@ -43,7 +43,7 @@ public class Res_AdminUserCreateImpl extends SessionResidentComponent implements
 
 
     @Override
-    public void stateAcknowledged() {
+    public void stateHandled() {
         mStateManager.reset();
     }
 

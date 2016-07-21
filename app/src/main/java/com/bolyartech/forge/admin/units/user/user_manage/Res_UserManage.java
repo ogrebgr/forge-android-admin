@@ -12,7 +12,7 @@ public interface Res_UserManage {
 
     boolean getDisableResult();
 
-    void stateAcknowledged();
+    void stateHandled();
 
     enum State {
         IDLE,

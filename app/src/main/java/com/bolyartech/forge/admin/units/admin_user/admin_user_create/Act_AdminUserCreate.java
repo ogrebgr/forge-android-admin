@@ -132,7 +132,7 @@ public class Act_AdminUserCreate extends SessionActivity implements Df_CommWait.
             MyAppDialogs.showCommProblemDialog(getFragmentManager());
         }
 
-        mResident.stateAcknowledged();
+        mResident.stateHandled();
     }
 
 

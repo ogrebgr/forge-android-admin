@@ -89,12 +89,12 @@ public class Act_Users extends SessionActivity implements Df_CommWait.Listener {
             case DATA_OK:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 showData();
-                mResident.stateAcknowledged();
+                mResident.stateHandled();
                 break;
             case DATA_FAIL:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 MyAppDialogs.showCommProblemDialog(getFragmentManager());
-                mResident.stateAcknowledged();
+                mResident.stateHandled();
                 break;
         }
     }
