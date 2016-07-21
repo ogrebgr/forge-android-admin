@@ -118,12 +118,12 @@ public class Act_AdminUserManage extends SessionActivity implements DoesLogin, D
                         mUser.getName());
 
                 invalidateOptionsMenu();
-                mResident.resetState();
+                mResident.stateAcknowledged();
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 showData();
                 break;
             case DISABLE_FAIL:
-                mResident.resetState();
+                mResident.stateAcknowledged();
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 MyAppDialogs.showCommProblemDialog(getFragmentManager());
                 break;

@@ -115,7 +115,7 @@ public class Res_MainImpl extends SessionResidentComponent implements Res_Main {
 
 
     @Override
-    public void resetState() {
+    public void stateAcknowledged() {
         mAbortLogin = false;
         mStateManager.switchToState(State.IDLE);
     }

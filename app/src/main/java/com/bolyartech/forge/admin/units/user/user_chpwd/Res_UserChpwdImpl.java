@@ -44,7 +44,7 @@ public class Res_UserChpwdImpl extends SessionResidentComponent implements Res_U
 
 
     @Override
-    public void resetState() {
+    public void stateAcknowledged() {
         mStateManager.reset();
     }
 

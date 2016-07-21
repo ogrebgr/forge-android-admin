@@ -89,7 +89,7 @@ public class Res_UserManageImpl extends SessionResidentComponent implements Res_
 
 
     @Override
-    public void resetState() {
+    public void stateAcknowledged() {
         mStateManager.reset();
     }
 

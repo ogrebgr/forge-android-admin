@@ -177,11 +177,11 @@ public class Act_Main extends SessionActivity implements DoesLogin, Df_CommWait.
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 MyAppDialogs.hideLoggingInDialog(getFragmentManager());
                 screenModeLoggedIn();
-                mResident.resetState();
+                mResident.stateAcknowledged();
                 break;
             case SESSION_START_FAIL:
                 MyAppDialogs.showCommProblemDialog(getFragmentManager());
-                mResident.resetState();
+                mResident.stateAcknowledged();
                 screenModeNotLoggedIn();
                 break;
             case LOGGING_IN:
@@ -190,13 +190,13 @@ public class Act_Main extends SessionActivity implements DoesLogin, Df_CommWait.
             case LOGIN_FAIL:
                 MyAppDialogs.hideLoggingInDialog(getFragmentManager());
                 MyAppDialogs.showCommProblemDialog(getFragmentManager());
-                mResident.resetState();
+                mResident.stateAcknowledged();
                 screenModeNotLoggedIn();
                 break;
             case LOGIN_INVALID:
                 MyAppDialogs.hideLoggingInDialog(getFragmentManager());
                 MyAppDialogs.showInvalidAutologinDialog(getFragmentManager());
-                mResident.resetState();
+                mResident.stateAcknowledged();
                 screenModeNotLoggedIn();
                 break;
             case UPGRADE_NEEDED:

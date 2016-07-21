@@ -10,7 +10,7 @@ public interface Res_AdminUserManage {
     void enableUser(AdminUser user);
     void delete(AdminUser user);
 
-    void resetState();
+    void stateAcknowledged();
 
     boolean getDisableResult();
 

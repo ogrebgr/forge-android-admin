@@ -133,12 +133,12 @@ public class Act_UserManage extends SessionActivity implements DoesLogin, Df_Com
                         mUser.getScreenName());
 
                 invalidateOptionsMenu();
-                mResident.resetState();
+                mResident.stateAcknowledged();
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 showData();
                 break;
             case DISABLE_FAIL:
-                mResident.resetState();
+                mResident.stateAcknowledged();
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 MyAppDialogs.showCommProblemDialog(getFragmentManager());
                 break;

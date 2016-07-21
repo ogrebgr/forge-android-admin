@@ -12,7 +12,7 @@ public interface Res_Users {
 
     List<User> getData();
 
-    void resetState();
+    void stateAcknowledged();
 
     enum State {
         IDLE,

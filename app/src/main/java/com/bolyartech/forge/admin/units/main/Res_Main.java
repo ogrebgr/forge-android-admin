@@ -16,7 +16,7 @@ public interface Res_Main {
 
     void internetAvailable();
 
-    void resetState();
+    void stateAcknowledged();
 
     void onConnectivityChange();
 
