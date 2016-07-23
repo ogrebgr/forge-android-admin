@@ -31,6 +31,7 @@ import javax.inject.Provider;
 
 
 public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.Listener {
+    @SuppressWarnings("FieldCanBeLocal")
     private final String PARAM_REFRESH = "refresh";
     private final int ACT_USER_MANAGE = 1;
     private final int ACT_USER_CREATE = 2;

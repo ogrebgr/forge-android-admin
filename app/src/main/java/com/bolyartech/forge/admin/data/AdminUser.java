@@ -108,6 +108,7 @@ public class AdminUser implements Parcelable {
     }
 
 
+    @SuppressWarnings("SimplifiableIfStatement")
     public static boolean isValidName(String name) {
         if (name == null) {
             return false;

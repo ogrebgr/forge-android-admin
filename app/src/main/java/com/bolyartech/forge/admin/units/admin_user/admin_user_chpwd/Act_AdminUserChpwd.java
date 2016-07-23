@@ -45,7 +45,7 @@ public class Act_AdminUserChpwd extends SessionActivity implements Df_CommWait.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act__admin_user_chpwd);
 
-        mUserId = ActivityUtils.interceptLongParam(savedInstanceState, getIntent(), PARAM_USER_ID);
+        mUserId = ActivityUtils.interceptLongParam(savedInstanceState, getIntent(), PARAM_USER_ID, -1);
         if (mUserId == -1) {
             throw new IllegalArgumentException("Missing PARAM_USER_ID");
         }
