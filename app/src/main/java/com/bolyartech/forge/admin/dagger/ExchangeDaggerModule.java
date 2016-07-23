@@ -1,9 +1,9 @@
 package com.bolyartech.forge.admin.dagger;
 
-import com.bolyartech.forge.admin.app.ForgeExchangeHelper;
-import com.bolyartech.forge.admin.app.ForgeExchangeHelperImpl;
 import com.bolyartech.forge.admin.misc.ForgeHeaderResultProducer;
 import com.bolyartech.forge.android.task.ForgeAndroidTaskExecutor;
+import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
+import com.bolyartech.forge.base.exchange.ForgeExchangeHelperImpl;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.ResultProducer;
 import com.bolyartech.forge.base.task.ForgeExchangeManager;

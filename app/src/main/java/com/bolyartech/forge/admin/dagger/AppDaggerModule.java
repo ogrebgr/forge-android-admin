@@ -5,6 +5,7 @@ import android.content.Context;
 import com.bolyartech.forge.admin.app.App;
 import com.bolyartech.forge.admin.app.LoginPrefs;
 import com.bolyartech.forge.admin.app.LoginPrefsImpl;
+import com.bolyartech.forge.android.misc.AndroidOtto;
 import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
@@ -35,7 +36,7 @@ public class AppDaggerModule {
     @Provides
     @Singleton
     Bus provideOttoBus() {
-        return new Bus();
+        return new AndroidOtto();
     }
 
     @Provides

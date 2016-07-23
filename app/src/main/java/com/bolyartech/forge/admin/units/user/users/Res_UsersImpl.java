@@ -1,19 +1,18 @@
 package com.bolyartech.forge.admin.units.user.users;
 
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
-import com.bolyartech.forge.admin.app.ForgeExchangeHelper;
 import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
 import com.bolyartech.forge.admin.data.User;
-import com.bolyartech.forge.android.app_unit.StateManager;
 import com.bolyartech.forge.android.app_unit.StateManagerImpl;
-import com.bolyartech.forge.android.misc.EventPoster;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
+import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
 import com.bolyartech.forge.base.task.ForgeExchangeManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.squareup.otto.Bus;
 
 import org.slf4j.LoggerFactory;
 
@@ -24,11 +23,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 
-public class Res_UsersImpl extends SessionResidentComponent implements Res_Users {
+public class Res_UsersImpl extends SessionResidentComponent<Res_Users.State> implements Res_Users {
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
-
-    private final StateManager<State> mStateManager;
 
     private volatile long mSearchXId;
 
@@ -40,17 +37,13 @@ public class Res_UsersImpl extends SessionResidentComponent implements Res_Users
     public Res_UsersImpl(ForgeExchangeHelper forgeExchangeHelper,
                          Session session,
                          NetworkInfoProvider networkInfoProvider,
-                         EventPoster eventPoster) {
-        super(forgeExchangeHelper, session, networkInfoProvider, eventPoster);
+                         Bus bus) {
+        super(new StateManagerImpl<>(bus, State.IDLE),
+                forgeExchangeHelper,
+                session,
+                networkInfoProvider);
 
         mGson = new Gson();
-        mStateManager = new StateManagerImpl<>(eventPoster, State.IDLE);
-    }
-
-
-    @Override
-    public State getState() {
-        return mStateManager.getState();
     }
 
 
@@ -76,8 +69,8 @@ public class Res_UsersImpl extends SessionResidentComponent implements Res_Users
 
     @Override
     public void stateHandled() {
+        super.stateHandled();
         mData = null;
-        mStateManager.reset();
     }
 
 
@@ -98,15 +91,15 @@ public class Res_UsersImpl extends SessionResidentComponent implements Res_Users
                     Type listType = new TypeToken<ArrayList<User>>(){}.getType();
                     mData = mGson.fromJson(result.getPayload(), listType);
 
-                    mStateManager.switchToState(State.DATA_OK);
+                    switchToState(State.DATA_OK);
                 } else {
-                    mStateManager.switchToState(State.DATA_FAIL);
+                    switchToState(State.DATA_FAIL);
                 }
             } else {
-                mStateManager.switchToState(State.DATA_FAIL);
+                switchToState(State.DATA_FAIL);
             }
         } else {
-            mStateManager.switchToState(State.DATA_FAIL);
+            switchToState(State.DATA_FAIL);
         }
     }
 }

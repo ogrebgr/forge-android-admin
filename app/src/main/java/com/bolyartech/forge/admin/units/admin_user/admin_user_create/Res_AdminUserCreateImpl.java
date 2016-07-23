@@ -1,26 +1,24 @@
 package com.bolyartech.forge.admin.units.admin_user.admin_user_create;
 
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
-import com.bolyartech.forge.admin.app.ForgeExchangeHelper;
 import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
-import com.bolyartech.forge.android.app_unit.StateManager;
 import com.bolyartech.forge.android.app_unit.StateManagerImpl;
-import com.bolyartech.forge.android.misc.EventPoster;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
+import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
 import com.bolyartech.forge.base.task.ForgeExchangeManager;
+import com.squareup.otto.Bus;
 
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
 
-public class Res_AdminUserCreateImpl extends SessionResidentComponent implements Res_AdminUserCreate {
+public class Res_AdminUserCreateImpl extends SessionResidentComponent<Res_AdminUserCreate.State> implements Res_AdminUserCreate {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
-    private final StateManager<State> mStateManager;
     private volatile Long mCreateXId;
     private int mLastError;
 
@@ -29,22 +27,12 @@ public class Res_AdminUserCreateImpl extends SessionResidentComponent implements
     public Res_AdminUserCreateImpl(ForgeExchangeHelper forgeExchangeHelper,
                                    Session session,
                                    NetworkInfoProvider networkInfoProvider,
-                                   EventPoster eventPoster) {
-        super(forgeExchangeHelper, session, networkInfoProvider, eventPoster);
+                                   Bus bus) {
 
-        mStateManager = new StateManagerImpl<>(eventPoster, State.IDLE);
-    }
-
-
-    @Override
-    public State getState() {
-        return mStateManager.getState();
-    }
-
-
-    @Override
-    public void stateHandled() {
-        mStateManager.reset();
+        super(new StateManagerImpl<>(bus, State.IDLE),
+                forgeExchangeHelper,
+                session,
+                networkInfoProvider);
     }
 
 
@@ -54,9 +42,9 @@ public class Res_AdminUserCreateImpl extends SessionResidentComponent implements
                      String password,
                      boolean superAdmin) {
 
-        if (mStateManager.getState() == State.IDLE) {
+        if (getState() == State.IDLE) {
             mLastError = 0;
-            mStateManager.switchToState(State.SAVING);
+            switchToState(State.SAVING);
             ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("create_admin_user");
             b.addPostParameter("username", username);
             b.addPostParameter("name", name);
@@ -92,16 +80,16 @@ public class Res_AdminUserCreateImpl extends SessionResidentComponent implements
 
             if (code > 0) {
                 if (code == BasicResponseCodes.Oks.OK.getCode()) {
-                    mStateManager.switchToState(State.SAVE_OK);
+                    switchToState(State.SAVE_OK);
                 } else {
-                    mStateManager.switchToState(State.SAVE_FAIL);
+                    switchToState(State.SAVE_FAIL);
                 }
             } else {
                 mLastError = code;
-                mStateManager.switchToState(State.SAVE_FAIL);
+                switchToState(State.SAVE_FAIL);
             }
         } else {
-            mStateManager.switchToState(State.SAVE_FAIL);
+            switchToState(State.SAVE_FAIL);
         }
     }
 }

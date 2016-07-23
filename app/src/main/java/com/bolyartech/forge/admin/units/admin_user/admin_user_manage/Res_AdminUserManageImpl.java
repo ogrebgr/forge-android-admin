@@ -1,17 +1,16 @@
 package com.bolyartech.forge.admin.units.admin_user.admin_user_manage;
 
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
-import com.bolyartech.forge.admin.app.ForgeExchangeHelper;
 import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
 import com.bolyartech.forge.admin.data.AdminUser;
-import com.bolyartech.forge.android.app_unit.StateManager;
 import com.bolyartech.forge.android.app_unit.StateManagerImpl;
-import com.bolyartech.forge.android.misc.EventPoster;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
+import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
 import com.bolyartech.forge.base.task.ForgeExchangeManager;
+import com.squareup.otto.Bus;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,10 +19,8 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class Res_AdminUserManageImpl extends SessionResidentComponent implements Res_AdminUserManage {
+public class Res_AdminUserManageImpl extends SessionResidentComponent<Res_AdminUserManage.State> implements Res_AdminUserManage {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
-
-    private final StateManager<State> mStateManager;
 
 
     private volatile long mDisableXId;
@@ -35,24 +32,16 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent implements
     public Res_AdminUserManageImpl(ForgeExchangeHelper forgeExchangeHelper,
                                    Session session,
                                    NetworkInfoProvider networkInfoProvider,
-                                   EventPoster eventPoster) {
+                                   Bus bus) {
 
-        super(forgeExchangeHelper, session, networkInfoProvider, eventPoster);
-
-        mStateManager = new StateManagerImpl<>(eventPoster, State.IDLE);
-    }
-
-
-    @Override
-    public State getState() {
-        return mStateManager.getState();
+        super(new StateManagerImpl<>(bus, State.IDLE), forgeExchangeHelper, session, networkInfoProvider);
     }
 
 
     @Override
     public void disableUser(AdminUser user) {
-        if (mStateManager.getState() == State.IDLE) {
-            mStateManager.switchToState(State.DISABLING);
+        if (getState() == State.IDLE) {
+            switchToState(State.DISABLING);
             disableEnable(user.getId(), true);
         } else {
             throw new IllegalStateException("Not in IDLE state");
@@ -73,8 +62,8 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent implements
 
     @Override
     public void enableUser(AdminUser user) {
-        if (mStateManager.getState() == State.IDLE) {
-            mStateManager.switchToState(State.DISABLING);
+        if (getState() == State.IDLE) {
+            switchToState(State.DISABLING);
             disableEnable(user.getId(), false);
         } else {
             throw new IllegalStateException("Not in IDLE state");
@@ -89,16 +78,9 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent implements
 
 
     @Override
-    public void stateHandled() {
-        mStateManager.reset();
-    }
-
-
-    @Override
     public boolean getDisableResult() {
         return mDisableResult;
     }
-
 
 
     @Override
@@ -118,18 +100,18 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent implements
                     try {
                         JSONObject jobj = new JSONObject(result.getPayload());
                         mDisableResult = jobj.getBoolean("disabled");
-                        mStateManager.switchToState(State.DISABLE_OK);
+                        switchToState(State.DISABLE_OK);
                     } catch (JSONException e) {
-                        mStateManager.switchToState(State.DISABLE_FAIL);
+                        switchToState(State.DISABLE_FAIL);
                     }
                 } else {
-                    mStateManager.switchToState(State.DISABLE_FAIL);
+                    switchToState(State.DISABLE_FAIL);
                 }
             } else {
-                mStateManager.switchToState(State.DISABLE_FAIL);
+                switchToState(State.DISABLE_FAIL);
             }
         } else {
-            mStateManager.switchToState(State.DISABLE_FAIL);
+            switchToState(State.DISABLE_FAIL);
         }
     }
 }

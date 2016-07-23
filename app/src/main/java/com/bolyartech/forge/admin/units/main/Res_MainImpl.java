@@ -2,17 +2,16 @@ package com.bolyartech.forge.admin.units.main;
 
 import com.bolyartech.forge.admin.app.AppConfiguration;
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
-import com.bolyartech.forge.admin.app.ForgeExchangeHelper;
 import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
-import com.bolyartech.forge.android.app_unit.StateManager;
 import com.bolyartech.forge.android.app_unit.StateManagerImpl;
-import com.bolyartech.forge.android.misc.EventPoster;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
+import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
 import com.bolyartech.forge.base.task.ForgeExchangeManager;
+import com.squareup.otto.Bus;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,10 +20,8 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class Res_MainImpl extends SessionResidentComponent implements Res_Main {
+public class Res_MainImpl extends SessionResidentComponent<Res_Main.State> implements Res_Main {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
-
-    private final StateManager<State> mStateManager;
 
     private final AppConfiguration mAppConfiguration;
     private final NetworkInfoProvider mNetworkInfoProvider;
@@ -37,19 +34,16 @@ public class Res_MainImpl extends SessionResidentComponent implements Res_Main {
     public Res_MainImpl(ForgeExchangeHelper forgeExchangeHelper,
                         Session session,
                         NetworkInfoProvider networkInfoProvider,
-                        EventPoster eventPoster,
+                        Bus bus,
                         AppConfiguration appConfiguration) {
 
-        super(forgeExchangeHelper, session, networkInfoProvider, eventPoster);
-        mStateManager = new StateManagerImpl<>(eventPoster, State.IDLE);
+        super(new StateManagerImpl<>(bus, State.IDLE),
+                forgeExchangeHelper,
+                session,
+                networkInfoProvider);
+
         mAppConfiguration = appConfiguration;
         mNetworkInfoProvider = networkInfoProvider;
-    }
-
-
-    @Override
-    public State getState() {
-        return mStateManager.getState();
     }
 
 
@@ -58,7 +52,7 @@ public class Res_MainImpl extends SessionResidentComponent implements Res_Main {
         super.onCreate();
 
         if (mNetworkInfoProvider.isConnected()) {
-            mStateManager.switchToState(State.IDLE);
+            switchToState(State.IDLE);
             init();
         }
     }
@@ -81,14 +75,14 @@ public class Res_MainImpl extends SessionResidentComponent implements Res_Main {
 
     @Override
     public void startSession() {
-        mStateManager.switchToState(State.SESSION_STARTED_OK);
+        switchToState(State.SESSION_STARTED_OK);
     }
 
 
     @Override
     public void abortLogin() {
         mAbortLogin = true;
-        mStateManager.switchToState(State.IDLE);
+        switchToState(State.IDLE);
     }
 
 
@@ -104,7 +98,7 @@ public class Res_MainImpl extends SessionResidentComponent implements Res_Main {
             }
         });
         t.start();
-        mStateManager.switchToState(State.IDLE);
+        switchToState(State.IDLE);
     }
 
 
@@ -117,7 +111,7 @@ public class Res_MainImpl extends SessionResidentComponent implements Res_Main {
     @Override
     public void stateHandled() {
         mAbortLogin = false;
-        mStateManager.switchToState(State.IDLE);
+        switchToState(State.IDLE);
     }
 
 
@@ -131,7 +125,7 @@ public class Res_MainImpl extends SessionResidentComponent implements Res_Main {
 
     private void loginActual() {
         if (getState() == State.IDLE) {
-            mStateManager.switchToState(State.LOGGING_IN);
+            switchToState(State.LOGGING_IN);
 
             ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("login");
             b.addPostParameter("username", mAppConfiguration.getLoginPrefs().getUsername());
@@ -176,26 +170,26 @@ public class Res_MainImpl extends SessionResidentComponent implements Res_Main {
 
                                 startSession();
                             } else {
-                                mStateManager.switchToState(State.LOGIN_FAIL);
+                                switchToState(State.LOGIN_FAIL);
                                 mLogger.error("Missing session info");
                             }
                         } catch (JSONException e) {
-                            mStateManager.switchToState(State.LOGIN_FAIL);
+                            switchToState(State.LOGIN_FAIL);
                             mLogger.warn("Login exchange failed because cannot parse JSON");
                         }
                     } else {
                         // unexpected positive code
-                        mStateManager.switchToState(State.LOGIN_FAIL);
+                        switchToState(State.LOGIN_FAIL);
                     }
                 } else if (code == BasicResponseCodes.Errors.UPGRADE_NEEDED.getCode()) {
-                    mStateManager.switchToState(State.UPGRADE_NEEDED);
+                    switchToState(State.UPGRADE_NEEDED);
                 } else if (code == BasicResponseCodes.Errors.INVALID_LOGIN.getCode()) {
-                    mStateManager.switchToState(State.LOGIN_INVALID);
+                    switchToState(State.LOGIN_INVALID);
                 } else {
-                    mStateManager.switchToState(State.LOGIN_FAIL);
+                    switchToState(State.LOGIN_FAIL);
                 }
             } else {
-                mStateManager.switchToState(State.LOGIN_FAIL);
+                switchToState(State.LOGIN_FAIL);
             }
         }
     }

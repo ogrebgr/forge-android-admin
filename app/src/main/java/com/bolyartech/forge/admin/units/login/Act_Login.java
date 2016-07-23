@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.bolyartech.forge.admin.R;
+import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.LoginPrefs;
 import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
@@ -119,6 +120,7 @@ public class Act_Login extends SessionActivity implements DoesLogin {
                 MyAppDialogs.showCommWaitDialog(getFragmentManager());
                 break;
             case LOGIN_FAIL:
+                handleLoginFail();
                 break;
             case STARTING_SESSION:
                 MyAppDialogs.showCommWaitDialog(getFragmentManager());
@@ -131,6 +133,16 @@ public class Act_Login extends SessionActivity implements DoesLogin {
             case SESSION_START_FAIL:
                 handleError();
                 break;
+        }
+    }
+
+
+    private void handleLoginFail() {
+        MyAppDialogs.hideCommWaitDialog(getFragmentManager());
+        if (mResident.getLastError() == BasicResponseCodes.Errors.INVALID_LOGIN) {
+            MyAppDialogs.showInvalidLoginDialog(getFragmentManager());
+        } else {
+            MyAppDialogs.showCommProblemDialog(getFragmentManager());
         }
     }
 
