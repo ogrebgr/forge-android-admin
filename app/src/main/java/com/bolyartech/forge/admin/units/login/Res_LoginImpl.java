@@ -5,7 +5,7 @@ import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.LoginPrefs;
 import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
-import com.bolyartech.forge.android.app_unit.StateManagerImpl;
+import com.bolyartech.forge.android.app_unit.SimpleStateManagerImpl;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
@@ -45,7 +45,7 @@ public class Res_LoginImpl extends SessionResidentComponent<Res_Login.State> imp
                          NetworkInfoProvider networkInfoProvider,
                          Bus bus) {
 
-        super(new StateManagerImpl<>(bus, State.IDLE),
+        super(new SimpleStateManagerImpl<>(bus, State.IDLE),
                 forgeExchangeHelper,
                 session,
                 networkInfoProvider);
@@ -140,4 +140,12 @@ public class Res_LoginImpl extends SessionResidentComponent<Res_Login.State> imp
         switchToState(State.SESSION_STARTED_OK);
     }
 
+
+    @Override
+    public void stateHandled() {
+        if (isInOneOfStates(State.LOGIN_FAIL, State.SESSION_STARTED_OK, State.SESSION_START_FAIL)) {
+            resetState();
+        }
+
+    }
 }

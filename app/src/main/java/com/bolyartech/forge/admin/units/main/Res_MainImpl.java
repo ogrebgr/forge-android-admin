@@ -4,7 +4,7 @@ import com.bolyartech.forge.admin.app.AppConfiguration;
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
-import com.bolyartech.forge.android.app_unit.StateManagerImpl;
+import com.bolyartech.forge.android.app_unit.SimpleStateManagerImpl;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
@@ -37,7 +37,7 @@ public class Res_MainImpl extends SessionResidentComponent<Res_Main.State> imple
                         Bus bus,
                         AppConfiguration appConfiguration) {
 
-        super(new StateManagerImpl<>(bus, State.IDLE),
+        super(new SimpleStateManagerImpl<>(bus, State.IDLE),
                 forgeExchangeHelper,
                 session,
                 networkInfoProvider);
@@ -111,7 +111,11 @@ public class Res_MainImpl extends SessionResidentComponent<Res_Main.State> imple
     @Override
     public void stateHandled() {
         mAbortLogin = false;
-        switchToState(State.IDLE);
+
+        if (isInOneOfStates(State.LOGIN_INVALID, State.SESSION_START_FAIL,
+                State.SESSION_STARTED_OK, State.LOGIN_FAIL, State.UPGRADE_NEEDED)) {
+            resetState();
+        }
     }
 
 
@@ -119,8 +123,6 @@ public class Res_MainImpl extends SessionResidentComponent<Res_Main.State> imple
     public void onConnectivityChange() {
 
     }
-
-
 
 
     private void loginActual() {

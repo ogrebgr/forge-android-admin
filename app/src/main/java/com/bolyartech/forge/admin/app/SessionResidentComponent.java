@@ -1,7 +1,6 @@
 package com.bolyartech.forge.admin.app;
 
 import com.bolyartech.forge.android.app_unit.AbstractStatefulResidentComponent;
-import com.bolyartech.forge.android.app_unit.ResidentComponentState;
 import com.bolyartech.forge.android.app_unit.StateManager;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.base.exchange.ExchangeOutcome;
@@ -18,7 +17,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by ogre on 2015-11-17 16:22
  */
-abstract public class SessionResidentComponent<T extends Enum<T> & ResidentComponentState>
+abstract public class SessionResidentComponent<T extends Enum<T>>
         extends AbstractStatefulResidentComponent<T> implements
         ExchangeManager.Listener<ForgeExchangeResult> {
 

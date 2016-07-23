@@ -1,9 +1,6 @@
 package com.bolyartech.forge.admin.units.admin_user.admin_user_create;
 
-import com.bolyartech.forge.android.app_unit.ResidentComponentState;
 import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
-
-import static com.bolyartech.forge.android.app_unit.ResidentComponentState.Type.*;
 
 
 public interface Res_AdminUserCreate extends StatefulResidentComponent<Res_AdminUserCreate.State> {
@@ -15,24 +12,10 @@ public interface Res_AdminUserCreate extends StatefulResidentComponent<Res_Admin
 
     int getLastError();
 
-    enum State implements ResidentComponentState {
-        IDLE(START),
-        SAVING(TRANSIENT),
-        SAVE_OK(END),
-        SAVE_FAIL(END);
-
-        private final ResidentComponentState.Type mType;
-
-
-        State(ResidentComponentState.Type type) {
-            mType = type;
-        }
-
-
-        public ResidentComponentState.Type getType() {
-            return mType;
-        }
+    enum State {
+        IDLE,
+        SAVING,
+        SAVE_OK,
+        SAVE_FAIL
     }
-
-
 }

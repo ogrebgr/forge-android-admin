@@ -3,7 +3,7 @@ package com.bolyartech.forge.admin.units.admin_user.admin_user_create;
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
-import com.bolyartech.forge.android.app_unit.StateManagerImpl;
+import com.bolyartech.forge.android.app_unit.SimpleStateManagerImpl;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
@@ -29,7 +29,7 @@ public class Res_AdminUserCreateImpl extends SessionResidentComponent<Res_AdminU
                                    NetworkInfoProvider networkInfoProvider,
                                    Bus bus) {
 
-        super(new StateManagerImpl<>(bus, State.IDLE),
+        super(new SimpleStateManagerImpl<>(bus, State.IDLE),
                 forgeExchangeHelper,
                 session,
                 networkInfoProvider);
@@ -90,6 +90,14 @@ public class Res_AdminUserCreateImpl extends SessionResidentComponent<Res_AdminU
             }
         } else {
             switchToState(State.SAVE_FAIL);
+        }
+    }
+
+
+    @Override
+    public void stateHandled() {
+        if (isInOneOfStates(State.SAVE_OK, State.SAVE_FAIL)) {
+            resetState();
         }
     }
 }
