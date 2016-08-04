@@ -101,8 +101,8 @@ public class Act_UserManage extends SessionActivity implements DoesLogin, Df_Com
     }
 
 
-    @Subscribe
-    public void onStateChangedEvent(StateChangedEvent ev) {
+    @Override
+    public void stateChanged() {
         handleState(mResident.getState());
     }
 

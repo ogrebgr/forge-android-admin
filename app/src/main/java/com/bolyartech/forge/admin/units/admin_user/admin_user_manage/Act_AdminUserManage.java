@@ -143,8 +143,8 @@ public class Act_AdminUserManage extends SessionActivity implements DoesLogin, D
     }
 
 
-    @Subscribe
-    public void onStateChangedEvent(StateChangedEvent ev) {
+    @Override
+    public void stateChanged() {
         handleState(mResident.getState());
     }
 

@@ -4,7 +4,6 @@ import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
 import com.bolyartech.forge.admin.data.AdminUser;
-import com.bolyartech.forge.android.app_unit.SimpleStateManagerImpl;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
@@ -31,10 +30,9 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent<Res_AdminU
     @Inject
     public Res_AdminUserManageImpl(ForgeExchangeHelper forgeExchangeHelper,
                                    Session session,
-                                   NetworkInfoProvider networkInfoProvider,
-                                   Bus bus) {
+                                   NetworkInfoProvider networkInfoProvider) {
 
-        super(new SimpleStateManagerImpl<>(bus, State.IDLE), forgeExchangeHelper, session, networkInfoProvider);
+        super(State.IDLE, forgeExchangeHelper, session, networkInfoProvider);
     }
 
 

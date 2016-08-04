@@ -146,8 +146,8 @@ public class Act_Users extends SessionActivity implements Df_CommWait.Listener {
     }
 
 
-    @Subscribe
-    public void onStateChangedEvent(StateChangedEvent ev) {
+    @Override
+    public void stateChanged() {
         handleState(mResident.getState());
     }
 

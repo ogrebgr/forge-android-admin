@@ -89,8 +89,8 @@ public class Act_AdminUserCreate extends SessionActivity implements Df_CommWait.
     }
 
 
-    @Subscribe
-    public void onStateChangedEvent(StateChangedEvent ev) {
+    @Override
+    public void stateChanged() {
         handleState(mResident.getState());
     }
 

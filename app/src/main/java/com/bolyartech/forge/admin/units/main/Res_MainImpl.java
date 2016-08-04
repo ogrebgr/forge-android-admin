@@ -4,7 +4,6 @@ import com.bolyartech.forge.admin.app.AppConfiguration;
 import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.Session;
 import com.bolyartech.forge.admin.app.SessionResidentComponent;
-import com.bolyartech.forge.android.app_unit.SimpleStateManagerImpl;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
@@ -34,10 +33,9 @@ public class Res_MainImpl extends SessionResidentComponent<Res_Main.State> imple
     public Res_MainImpl(ForgeExchangeHelper forgeExchangeHelper,
                         Session session,
                         NetworkInfoProvider networkInfoProvider,
-                        Bus bus,
                         AppConfiguration appConfiguration) {
 
-        super(new SimpleStateManagerImpl<>(bus, State.IDLE),
+        super(State.IDLE,
                 forgeExchangeHelper,
                 session,
                 networkInfoProvider);

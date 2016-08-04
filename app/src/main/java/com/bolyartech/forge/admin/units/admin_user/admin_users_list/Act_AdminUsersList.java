@@ -17,6 +17,7 @@ import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.units.admin_user.admin_user_create.Act_AdminUserCreate;
 import com.bolyartech.forge.admin.units.admin_user.admin_user_manage.Act_AdminUserManage;
+import com.bolyartech.forge.android.app_unit.ActivityResult;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
 import com.bolyartech.forge.android.app_unit.StateChangedEvent;
 import com.bolyartech.forge.android.misc.ViewUtils;
@@ -47,6 +48,8 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
     private AdminUsersAdapter mAdminUsersAdapter;
 
     private volatile Runnable mOnResumePendingAction;
+
+    private ActivityResult mActivityResult;
 
 
     @Override
@@ -95,10 +98,15 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
 
         mResident = (Res_AdminUsersList) getResidentComponent();
 
-        if (mOnResumePendingAction == null) {
-            handleState(mResident.getState());
+        if (mActivityResult == null) {
+            if (mOnResumePendingAction == null) {
+                handleState(mResident.getState());
+            } else {
+                runOnUiThread(mOnResumePendingAction);
+            }
         } else {
-            runOnUiThread(mOnResumePendingAction);
+            handleActivityResult(mActivityResult);
+            mActivityResult = null;
         }
     }
 
@@ -140,8 +148,8 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
     }
 
 
-    @Subscribe
-    public void onStateChangedEvent(StateChangedEvent ev) {
+    @Override
+    public void stateChanged() {
         handleState(mResident.getState());
     }
 
@@ -180,15 +188,7 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == ACT_USER_MANAGE) {
-            if (resultCode == Activity.RESULT_OK) {
-                if (data.getBooleanExtra(PARAM_REFRESH, false)) {
-                    createPendingRefresh();
-                }
-            }
-        } else if (requestCode == ACT_USER_CREATE && resultCode == Activity.RESULT_OK) {
-            createPendingRefresh();
-        }
+        mActivityResult = new ActivityResult(requestCode, resultCode, data);
     }
 
 
@@ -205,4 +205,20 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
             throw new IllegalStateException("mOnResumePendingAction is not null");
         }
     }
+
+
+    private void handleActivityResult(ActivityResult activityResult) {
+        if (activityResult.requestCode == ACT_USER_MANAGE) {
+            if (activityResult.resultCode == Activity.RESULT_OK) {
+                if (activityResult.data.getBooleanExtra(PARAM_REFRESH, false)) {
+                    createPendingRefresh();
+                }
+            }
+        } else if (activityResult.requestCode == ACT_USER_CREATE && activityResult.resultCode == Activity.RESULT_OK) {
+            createPendingRefresh();
+        }
+
+        mActivityResult = null;
+    }
+
 }

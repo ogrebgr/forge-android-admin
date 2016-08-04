@@ -175,8 +175,8 @@ public class Act_UserChpwd extends SessionActivity implements Df_CommWait.Listen
     }
 
 
-    @Subscribe
-    public void onStateChangedEvent(StateChangedEvent ev) {
+    @Override
+    public void stateChanged() {
         handleState(mResident.getState());
     }
 
