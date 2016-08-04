@@ -19,9 +19,7 @@ import com.bolyartech.forge.admin.units.admin_user.admin_user_create.Act_AdminUs
 import com.bolyartech.forge.admin.units.admin_user.admin_user_manage.Act_AdminUserManage;
 import com.bolyartech.forge.android.app_unit.ActivityResult;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
-import com.bolyartech.forge.android.app_unit.StateChangedEvent;
 import com.bolyartech.forge.android.misc.ViewUtils;
-import com.squareup.otto.Subscribe;
 
 import org.slf4j.LoggerFactory;
 

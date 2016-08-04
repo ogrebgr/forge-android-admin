@@ -16,10 +16,8 @@ import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.DoesLogin;
 import com.bolyartech.forge.admin.units.admin_user.admin_user_chpwd.Act_AdminUserChpwd;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
-import com.bolyartech.forge.android.app_unit.StateChangedEvent;
 import com.bolyartech.forge.android.misc.ActivityUtils;
 import com.bolyartech.forge.android.misc.ViewUtils;
-import com.squareup.otto.Subscribe;
 
 import org.slf4j.LoggerFactory;
 

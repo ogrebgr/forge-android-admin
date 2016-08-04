@@ -16,10 +16,8 @@ import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.AdminResponseCodes;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
-import com.bolyartech.forge.android.app_unit.StateChangedEvent;
 import com.bolyartech.forge.android.misc.ViewUtils;
 import com.google.common.base.Strings;
-import com.squareup.otto.Subscribe;
 
 import java.text.MessageFormat;
 
