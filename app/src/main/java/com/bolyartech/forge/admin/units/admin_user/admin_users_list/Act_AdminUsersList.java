@@ -7,7 +7,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.bolyartech.forge.admin.R;
@@ -45,8 +44,6 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
     private ListView mLvAdminUsers;
     private AdminUsersAdapter mAdminUsersAdapter;
 
-    private volatile Runnable mOnResumePendingAction;
-
     private ActivityResult mActivityResult;
 
 
@@ -71,15 +68,12 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
     private void initViews(View view) {
         mLvAdminUsers = ViewUtils.findListViewX(view, R.id.lv_admin_users);
         mLvAdminUsers.setEmptyView(ViewUtils.findTextView(view, R.id.tv_empty));
-        mLvAdminUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                AdminUser user = (AdminUser) parent.getItemAtPosition(position);
+        mLvAdminUsers.setOnItemClickListener((parent, view1, position, id) -> {
+            AdminUser user = (AdminUser) parent.getItemAtPosition(position);
 
-                Intent intent = new Intent(Act_AdminUsersList.this, Act_AdminUserManage.class);
-                intent.putExtra(Act_AdminUserManage.PARAM_USER, user);
-                startActivityForResult(intent, ACT_USER_MANAGE);
-            }
+            Intent intent = new Intent(Act_AdminUsersList.this, Act_AdminUserManage.class);
+            intent.putExtra(Act_AdminUserManage.PARAM_USER, user);
+            startActivityForResult(intent, ACT_USER_MANAGE);
         });
     }
 
@@ -97,11 +91,7 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
         mResident = (Res_AdminUsersList) getResidentComponent();
 
         if (mActivityResult == null) {
-            if (mOnResumePendingAction == null) {
-                handleState(mResident.getState());
-            } else {
-                runOnUiThread(mOnResumePendingAction);
-            }
+            handleState(mResident.getState());
         } else {
             handleActivityResult(mActivityResult);
             mActivityResult = null;
@@ -190,30 +180,16 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
     }
 
 
-    private void createPendingRefresh() {
-        if (mOnResumePendingAction == null) {
-            mOnResumePendingAction = new Runnable() {
-                @Override
-                public void run() {
-                    mOnResumePendingAction = null;
-                    mResident.loadAdminUsers();
-                }
-            };
-        } else {
-            throw new IllegalStateException("mOnResumePendingAction is not null");
-        }
-    }
-
 
     private void handleActivityResult(ActivityResult activityResult) {
         if (activityResult.requestCode == ACT_USER_MANAGE) {
             if (activityResult.resultCode == Activity.RESULT_OK) {
                 if (activityResult.data.getBooleanExtra(PARAM_REFRESH, false)) {
-                    createPendingRefresh();
+                    mResident.loadAdminUsers();
                 }
             }
         } else if (activityResult.requestCode == ACT_USER_CREATE && activityResult.resultCode == Activity.RESULT_OK) {
-            createPendingRefresh();
+            mResident.loadAdminUsers();
         }
 
         mActivityResult = null;

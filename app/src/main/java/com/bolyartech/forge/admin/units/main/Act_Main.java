@@ -71,32 +71,23 @@ public class Act_Main extends SessionActivity implements DoesLogin, Df_CommWait.
 
         mTvLoggedInAs = ViewUtils.findTextViewX(view, R.id.tv_logged_in_as);
 
-        ViewUtils.initButton(view, R.id.btn_login, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mLoginPrefs.hasLoginCredentials()) {
-                    mResident.login();
-                } else {
-                    Intent intent = new Intent(Act_Main.this, Act_Login.class);
-                    startActivity(intent);
-                }
-            }
-        });
-
-        ViewUtils.initButton(view, R.id.btn_admin_users, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Act_Main.this, Act_AdminUsersList.class);
+        ViewUtils.initButton(view, R.id.btn_login, v -> {
+            if (mLoginPrefs.hasLoginCredentials()) {
+                mResident.login();
+            } else {
+                Intent intent = new Intent(Act_Main.this, Act_Login.class);
                 startActivity(intent);
             }
         });
 
-        ViewUtils.initButton(view, R.id.btn_users, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Act_Main.this, Act_Users.class);
-                startActivity(intent);
-            }
+        ViewUtils.initButton(view, R.id.btn_admin_users, v -> {
+            Intent intent = new Intent(Act_Main.this, Act_AdminUsersList.class);
+            startActivity(intent);
+        });
+
+        ViewUtils.initButton(view, R.id.btn_users, v -> {
+            Intent intent = new Intent(Act_Main.this, Act_Users.class);
+            startActivity(intent);
         });
     }
 

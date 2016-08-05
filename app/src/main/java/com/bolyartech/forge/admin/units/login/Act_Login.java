@@ -69,12 +69,9 @@ public class Act_Login extends SessionActivity implements DoesLogin {
         mEtPassword.setText(mLoginPrefs.getPassword());
 
 
-        ViewUtils.initButton(view, R.id.btn_login, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isDataValid()) {
-                    mResident.login(mEtUsername.getText().toString(), mEtPassword.getText().toString());
-                }
+        ViewUtils.initButton(view, R.id.btn_login, v -> {
+            if (isDataValid()) {
+                mResident.login(mEtUsername.getText().toString(), mEtPassword.getText().toString());
             }
         });
     }

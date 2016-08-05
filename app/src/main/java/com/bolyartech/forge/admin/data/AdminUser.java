@@ -94,6 +94,7 @@ public class AdminUser implements Parcelable {
     };
 
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isValidPasswordLength(String password) {
         if (password == null) {
             throw new IllegalArgumentException("password is null");
@@ -103,8 +104,9 @@ public class AdminUser implements Parcelable {
     }
 
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isValidUsername(String username) {
-        return username.matches("^[a-zA-Z]{1}[a-zA-Z0-9 _.?]{1,48}[a-zA-Z0-9]{1}$");
+        return username.matches("^[a-zA-Z][a-zA-Z0-9 _.?]{1,48}[a-zA-Z0-9]$");
     }
 
 
@@ -114,6 +116,6 @@ public class AdminUser implements Parcelable {
             return false;
         }
 
-        return name.matches("^[\\p{L}]{1}[\\p{L}\\p{N} ?]{1,33}[\\p{L}\\p{N}]{1}$");
+        return name.matches("^[\\p{L}][\\p{L}\\p{N} ?]{1,33}[\\p{L}\\p{N}]$");
     }
 }

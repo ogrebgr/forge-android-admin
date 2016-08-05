@@ -29,10 +29,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -78,13 +76,7 @@ public class DefaultAppDaggerComponent {
 
                 b.sslSocketFactory(sslSocketFactory);
 
-                b.hostnameVerifier(new HostnameVerifier() {
-                    @SuppressLint("BadHostnameVerifier")
-                    @Override
-                    public boolean verify(String hostname, SSLSession session) {
-                        return true;
-                    }
-                });
+                b.hostnameVerifier((hostname, session) -> true);
             } catch (KeyManagementException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }

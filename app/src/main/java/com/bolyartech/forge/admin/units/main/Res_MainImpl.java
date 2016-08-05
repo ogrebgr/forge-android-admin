@@ -86,13 +86,10 @@ public class Res_MainImpl extends SessionResidentComponent<Res_Main.State> imple
     @Override
     public void logout() {
         getSession().logout();
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ForgeGetHttpExchangeBuilder b = createForgeGetHttpExchangeBuilder("logout");
-                ForgeExchangeManager em = getForgeExchangeManager();
-                em.executeExchange(b.build(), em.generateTaskId());
-            }
+        Thread t = new Thread(() -> {
+            ForgeGetHttpExchangeBuilder b = createForgeGetHttpExchangeBuilder("logout");
+            ForgeExchangeManager em = getForgeExchangeManager();
+            em.executeExchange(b.build(), em.generateTaskId());
         });
         t.start();
         switchToState(State.IDLE);
