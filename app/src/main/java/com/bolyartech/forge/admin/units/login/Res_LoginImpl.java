@@ -53,19 +53,23 @@ public class Res_LoginImpl extends SessionResidentComponent<Res_Login.State> imp
 
     @Override
     public void login(String username, String password) {
-        switchToState(State.LOGGING_IN);
-        mLastUsedUsername = username;
-        mLastUsedPassword = password;
+        if (getState() == State.IDLE) {
+            switchToState(State.LOGGING_IN);
+            mLastUsedUsername = username;
+            mLastUsedPassword = password;
 
-        ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("login");
-        b.addPostParameter("username", username);
-        b.addPostParameter("password", password);
-        b.addPostParameter("app_type", "1");
-        b.addPostParameter("app_version", mAppConfiguration.getAppVersion());
+            ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("login");
+            b.addPostParameter("username", username);
+            b.addPostParameter("password", password);
+            b.addPostParameter("app_type", "1");
+            b.addPostParameter("app_version", mAppConfiguration.getAppVersion());
 
-        ForgeExchangeManager em = getForgeExchangeManager();
-        mLoginXId = em.generateTaskId();
-        em.executeExchange(b.build(), mLoginXId);
+            ForgeExchangeManager em = getForgeExchangeManager();
+            mLoginXId = em.generateTaskId();
+            em.executeExchange(b.build(), mLoginXId);
+        } else {
+            throw new IllegalStateException("Not in IDLE state");
+        }
     }
 
 

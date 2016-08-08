@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_AdminUserCreate extends SessionActivity implements Df_CommWait.Listener {
+public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> implements Df_CommWait.Listener {
     private EditText mEtUsername;
     private EditText mEtName;
     private EditText mEtPassword;
@@ -41,14 +41,13 @@ public class Act_AdminUserCreate extends SessionActivity implements Df_CommWait.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getDependencyInjector().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act__admin_user_create);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        getDependencyInjector().inject(this);
 
         if (getSession().getInfo().isSuperAdmin()) {
             initViews(getWindow().getDecorView());
@@ -82,7 +81,7 @@ public class Act_AdminUserCreate extends SessionActivity implements Df_CommWait.
 
 
     @Override
-    public ResidentComponent createResidentComponent() {
+    public Res_AdminUserCreate createResidentComponent() {
         return mRes_AdminUserCreateImplProvider.get();
     }
 

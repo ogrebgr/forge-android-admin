@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_UserManage extends SessionActivity implements DoesLogin, Df_CommWait.Listener {
+public class Act_UserManage extends SessionActivity<Res_UserManage> implements DoesLogin, Df_CommWait.Listener {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     public static final String PARAM_USER = "user";
@@ -43,6 +43,7 @@ public class Act_UserManage extends SessionActivity implements DoesLogin, Df_Com
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getDependencyInjector().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act__user_manage);
 
@@ -53,8 +54,6 @@ public class Act_UserManage extends SessionActivity implements DoesLogin, Df_Com
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        getDependencyInjector().inject(this);
 
         initViews(getWindow().getDecorView());
         showData();
@@ -87,7 +86,7 @@ public class Act_UserManage extends SessionActivity implements DoesLogin, Df_Com
 
 
     @Override
-    public ResidentComponent createResidentComponent() {
+    public Res_UserManage createResidentComponent() {
         return mRes_UserManageImplProvider.get();
     }
 

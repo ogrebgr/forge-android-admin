@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_AdminUserChpwd extends SessionActivity implements Df_CommWait.Listener {
+public class Act_AdminUserChpwd extends SessionActivity<Res_AdminUserChpwd> implements Df_CommWait.Listener {
     public static final String PARAM_USER_ID = "user id";
     private EditText mEtPassword;
     private EditText mEtPassword2;
@@ -40,6 +40,7 @@ public class Act_AdminUserChpwd extends SessionActivity implements Df_CommWait.L
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getDependencyInjector().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act__admin_user_chpwd);
 
@@ -50,8 +51,6 @@ public class Act_AdminUserChpwd extends SessionActivity implements Df_CommWait.L
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        getDependencyInjector().inject(this);
 
         if (getSession().getInfo().isSuperAdmin()) {
             initViews(getWindow().getDecorView());
@@ -113,7 +112,7 @@ public class Act_AdminUserChpwd extends SessionActivity implements Df_CommWait.L
 
 
     @Override
-    public ResidentComponent createResidentComponent() {
+    public Res_AdminUserChpwd createResidentComponent() {
         return mRes_AdminUserChpwdImplProvider.get();
     }
 

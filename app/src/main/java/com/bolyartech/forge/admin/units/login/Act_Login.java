@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_Login extends SessionActivity implements DoesLogin {
+public class Act_Login extends SessionActivity<Res_Login> implements DoesLogin {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     @Inject
@@ -42,6 +42,7 @@ public class Act_Login extends SessionActivity implements DoesLogin {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getDependencyInjector().inject(this);
         super.onCreate(savedInstanceState);
 
         if (getSession() != null && getSession().isLoggedIn()) {
@@ -50,8 +51,6 @@ public class Act_Login extends SessionActivity implements DoesLogin {
         }
 
         setContentView(R.layout.act__login);
-
-        getDependencyInjector().inject(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -92,7 +91,7 @@ public class Act_Login extends SessionActivity implements DoesLogin {
 
 
     @Override
-    public ResidentComponent createResidentComponent() {
+    public Res_Login createResidentComponent() {
         return mRes_LoginImplProvider.get();
     }
 

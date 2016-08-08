@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_AdminUserManage extends SessionActivity implements DoesLogin, Df_CommWait.Listener {
+public class Act_AdminUserManage extends SessionActivity<Res_AdminUserManage> implements DoesLogin, Df_CommWait.Listener {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private static final int ACT_ADMIN_CHPWD = 1;
     public static String PARAM_USER = "user";
@@ -45,13 +45,12 @@ public class Act_AdminUserManage extends SessionActivity implements DoesLogin, D
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getDependencyInjector().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act__admin_user_manage);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        getDependencyInjector().inject(this);
 
         mUser = (AdminUser) ActivityUtils.interceptParcelableParam(savedInstanceState, getIntent(), PARAM_USER);
         if (mUser == null) {
@@ -136,7 +135,7 @@ public class Act_AdminUserManage extends SessionActivity implements DoesLogin, D
 
 
     @Override
-    public ResidentComponent createResidentComponent() {
+    public Res_AdminUserManage createResidentComponent() {
         return mRes_AdminUserManageImplProvider.get();
     }
 

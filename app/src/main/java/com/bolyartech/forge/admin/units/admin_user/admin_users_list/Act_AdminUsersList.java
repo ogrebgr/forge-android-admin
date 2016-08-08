@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.Listener {
+public class Act_AdminUsersList extends SessionActivity<Res_AdminUsersList> implements Df_CommWait.Listener {
     @SuppressWarnings("FieldCanBeLocal")
     private final String PARAM_REFRESH = "refresh";
     private final int ACT_USER_MANAGE = 1;
@@ -49,13 +49,12 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getDependencyInjector().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act__admin_users_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        getDependencyInjector().inject(this);
 
         if (getSession().getInfo().isSuperAdmin()) {
             initViews(getWindow().getDecorView());
@@ -79,7 +78,7 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
 
 
     @Override
-    public ResidentComponent createResidentComponent() {
+    public Res_AdminUsersList createResidentComponent() {
         return mRes_AdminUsersListImplProvider.get();
     }
 
@@ -191,8 +190,6 @@ public class Act_AdminUsersList extends SessionActivity implements Df_CommWait.L
         } else if (activityResult.requestCode == ACT_USER_CREATE && activityResult.resultCode == Activity.RESULT_OK) {
             mResident.loadAdminUsers();
         }
-
-        mActivityResult = null;
     }
 
 }

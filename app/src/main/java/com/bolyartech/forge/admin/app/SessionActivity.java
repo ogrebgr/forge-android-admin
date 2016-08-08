@@ -4,13 +4,14 @@ import android.content.Intent;
 
 import com.bolyartech.forge.admin.units.main.Act_Main;
 import com.bolyartech.forge.admin.misc.DoesLogin;
+import com.bolyartech.forge.android.app_unit.ResidentComponent;
 
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
 
-abstract public class SessionActivity extends UnitBaseActivity {
+abstract public class SessionActivity<T extends ResidentComponent> extends UnitBaseActivity<T> {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     @Inject
