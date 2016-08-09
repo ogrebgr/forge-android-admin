@@ -15,7 +15,7 @@ import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.AdminResponseCodes;
-import com.bolyartech.forge.android.app_unit.ResidentComponent;
+import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
 import com.bolyartech.forge.android.misc.ViewUtils;
 import com.google.common.base.Strings;
 
@@ -25,7 +25,10 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> implements Df_CommWait.Listener {
+public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> implements
+        StatefulResidentComponent.Listener, Df_CommWait.Listener {
+
+
     private EditText mEtUsername;
     private EditText mEtName;
     private EditText mEtPassword;
@@ -87,7 +90,7 @@ public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> im
 
 
     @Override
-    public void stateChanged() {
+    public void onResidentStateChanged() {
         handleState(mResident.getState());
     }
 

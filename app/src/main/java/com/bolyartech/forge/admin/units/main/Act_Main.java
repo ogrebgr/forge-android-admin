@@ -18,7 +18,7 @@ import com.bolyartech.forge.admin.misc.DoesLogin;
 import com.bolyartech.forge.admin.units.admin_user.admin_users_list.Act_AdminUsersList;
 import com.bolyartech.forge.admin.units.login.Act_Login;
 import com.bolyartech.forge.admin.units.user.users.Act_Users;
-import com.bolyartech.forge.android.app_unit.ResidentComponent;
+import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.android.misc.ViewUtils;
 
@@ -28,7 +28,9 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_Main extends SessionActivity<Res_Main> implements DoesLogin, Df_CommWait.Listener {
+public class Act_Main extends SessionActivity<Res_Main> implements StatefulResidentComponent.Listener,
+        DoesLogin, Df_CommWait.Listener {
+
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private View mViewNoInet;
@@ -220,7 +222,7 @@ public class Act_Main extends SessionActivity<Res_Main> implements DoesLogin, Df
 
 
     @Override
-    public void stateChanged() {
+    public void onResidentStateChanged() {
         handleState(getResidentComponent().getState());
     }
 

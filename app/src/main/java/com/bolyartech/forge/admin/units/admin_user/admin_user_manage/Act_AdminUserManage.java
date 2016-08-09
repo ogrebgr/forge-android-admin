@@ -15,7 +15,7 @@ import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.DoesLogin;
 import com.bolyartech.forge.admin.units.admin_user.admin_user_chpwd.Act_AdminUserChpwd;
-import com.bolyartech.forge.android.app_unit.ResidentComponent;
+import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
 import com.bolyartech.forge.android.misc.ActivityUtils;
 import com.bolyartech.forge.android.misc.ViewUtils;
 
@@ -25,7 +25,10 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_AdminUserManage extends SessionActivity<Res_AdminUserManage> implements DoesLogin, Df_CommWait.Listener {
+public class Act_AdminUserManage extends SessionActivity<Res_AdminUserManage> implements
+        StatefulResidentComponent.Listener, DoesLogin, Df_CommWait.Listener {
+
+
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private static final int ACT_ADMIN_CHPWD = 1;
     public static String PARAM_USER = "user";
@@ -141,7 +144,7 @@ public class Act_AdminUserManage extends SessionActivity<Res_AdminUserManage> im
 
 
     @Override
-    public void stateChanged() {
+    public void onResidentStateChanged() {
         handleState(mResident.getState());
     }
 

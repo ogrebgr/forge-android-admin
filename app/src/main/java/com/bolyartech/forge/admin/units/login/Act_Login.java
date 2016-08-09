@@ -12,7 +12,7 @@ import com.bolyartech.forge.admin.app.LoginPrefs;
 import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.DoesLogin;
-import com.bolyartech.forge.android.app_unit.ResidentComponent;
+import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
 import com.bolyartech.forge.android.misc.ViewUtils;
 import com.bolyartech.forge.base.misc.StringUtils;
 
@@ -22,7 +22,9 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_Login extends SessionActivity<Res_Login> implements DoesLogin {
+public class Act_Login extends SessionActivity<Res_Login> implements StatefulResidentComponent.Listener,
+        DoesLogin {
+
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     @Inject
@@ -154,7 +156,7 @@ public class Act_Login extends SessionActivity<Res_Login> implements DoesLogin {
 
 
     @Override
-    public void stateChanged() {
+    public void onResidentStateChanged() {
         handleState(mResident.getState());
     }
 

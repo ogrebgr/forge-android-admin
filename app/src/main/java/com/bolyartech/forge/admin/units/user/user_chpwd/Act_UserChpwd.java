@@ -14,7 +14,7 @@ import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.AdminResponseCodes;
-import com.bolyartech.forge.android.app_unit.ResidentComponent;
+import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
 import com.bolyartech.forge.android.misc.ActivityUtils;
 import com.bolyartech.forge.android.misc.ViewUtils;
 import com.google.common.base.Strings;
@@ -25,7 +25,10 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_UserChpwd extends SessionActivity<Res_UserChpwd> implements Df_CommWait.Listener {
+public class Act_UserChpwd extends SessionActivity<Res_UserChpwd> implements StatefulResidentComponent.Listener,
+        Df_CommWait.Listener {
+
+
     public static final String PARAM_USER_ID = "user id";
     private EditText mEtPassword;
     private EditText mEtPassword2;
@@ -173,7 +176,7 @@ public class Act_UserChpwd extends SessionActivity<Res_UserChpwd> implements Df_
 
 
     @Override
-    public void stateChanged() {
+    public void onResidentStateChanged() {
         handleState(mResident.getState());
     }
 
