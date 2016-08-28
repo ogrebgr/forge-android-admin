@@ -14,7 +14,8 @@ import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.AdminResponseCodes;
-import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
+import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
+import com.bolyartech.forge.android.app_unit.OperationResidentComponent.OpState;
 import com.bolyartech.forge.android.misc.ActivityUtils;
 import com.bolyartech.forge.android.misc.ViewUtils;
 import com.google.common.base.Strings;
@@ -26,7 +27,7 @@ import javax.inject.Provider;
 
 
 public class Act_AdminUserChpwd extends SessionActivity<Res_AdminUserChpwd> implements
-        StatefulResidentComponent.Listener, Df_CommWait.Listener {
+        Df_CommWait.Listener, OperationResidentComponent.Listener {
 
 
     public static final String PARAM_USER_ID = "user id";
@@ -35,8 +36,6 @@ public class Act_AdminUserChpwd extends SessionActivity<Res_AdminUserChpwd> impl
 
     @Inject
     Provider<Res_AdminUserChpwdImpl> mRes_AdminUserChpwdImplProvider;
-
-    private Res_AdminUserChpwd mResident;
 
     private long mUserId;
 
@@ -55,7 +54,7 @@ public class Act_AdminUserChpwd extends SessionActivity<Res_AdminUserChpwd> impl
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (getSession().getInfo().isSuperAdmin()) {
+        if (getCurrentUser().isSuperadmin()) {
             initViews(getWindow().getDecorView());
         } else {
             finish();
@@ -72,26 +71,26 @@ public class Act_AdminUserChpwd extends SessionActivity<Res_AdminUserChpwd> impl
     @Override
     public void onResume() {
         super.onResume();
-        mResident = (Res_AdminUserChpwd) getResidentComponent();
-        handleState(mResident.getState());
+        handleState(getRes().getOpState());
     }
 
 
-    private void handleState(Res_AdminUserChpwd.State state) {
+    private void handleState(OpState state) {
         switch (state) {
             case IDLE:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 break;
-            case SAVING:
+            case BUSY:
                 MyAppDialogs.showCommWaitDialog(getFragmentManager());
                 break;
-            case SAVE_OK:
-                MyAppDialogs.hideCommWaitDialog(getFragmentManager());
-                setResult(Activity.RESULT_OK);
-                finish();
-                break;
-            case SAVE_FAIL:
-                handlerFail();
+            case COMPLETED:
+                if (getRes().isSuccess()) {
+                    MyAppDialogs.hideCommWaitDialog(getFragmentManager());
+                    setResult(Activity.RESULT_OK);
+                    finish();
+                } else {
+                    handlerFail();
+                }
                 break;
         }
     }
@@ -99,7 +98,7 @@ public class Act_AdminUserChpwd extends SessionActivity<Res_AdminUserChpwd> impl
 
     private void handlerFail() {
         MyAppDialogs.hideCommWaitDialog(getFragmentManager());
-        int errorCode = mResident.getLastError();
+        int errorCode = getRes().getLastError();
 
         if (errorCode == AdminResponseCodes.Errors.PASSWORD_TOO_SHORT.getCode()) {
             mEtPassword.setError(MessageFormat.format(getString(R.string.act__admin_user_create__err_password_too_short),
@@ -167,7 +166,7 @@ public class Act_AdminUserChpwd extends SessionActivity<Res_AdminUserChpwd> impl
 
         if (id == R.id.ab_save) {
             if (check()) {
-                mResident.save(mUserId, mEtPassword.getText().toString());
+                getRes().save(mUserId, mEtPassword.getText().toString());
             }
         }
 
@@ -176,14 +175,14 @@ public class Act_AdminUserChpwd extends SessionActivity<Res_AdminUserChpwd> impl
 
 
     @Override
-    public void onResidentStateChanged() {
-        handleState(mResident.getState());
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(PARAM_USER_ID, mUserId);
     }
 
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong(PARAM_USER_ID, mUserId);
+    public void onResidentOperationStateChanged() {
+        handleState(getRes().getOpState());
     }
 }

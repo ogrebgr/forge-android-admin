@@ -3,6 +3,7 @@ package com.bolyartech.forge.admin.dagger;
 
 import com.bolyartech.forge.admin.app.AppUnitManager;
 import com.bolyartech.forge.android.app_unit.UnitManager;
+import com.bolyartech.forge.base.session.Session;
 
 import javax.inject.Singleton;
 
@@ -15,17 +16,15 @@ import dagger.Provides;
  */
 @Module
 public class UnitManagerDaggerModule {
-    private final AppUnitManager mMyAppUnitManager;
-
-
-    public UnitManagerDaggerModule(AppUnitManager myAppUnitManager) {
-        mMyAppUnitManager = myAppUnitManager;
+    @Provides
+    @Singleton
+    AppUnitManager provideMyAppUnitManagerForge(Session session) {
+        return new AppUnitManager(session);
     }
-
 
     @Provides
     @Singleton
-    UnitManager provideUnitManager() {
-        return mMyAppUnitManager;
+    UnitManager provideUnitManager(AppUnitManager my) {
+        return my;
     }
 }

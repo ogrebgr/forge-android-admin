@@ -1,12 +1,13 @@
 package com.bolyartech.forge.admin.dagger;
 
-import com.bolyartech.forge.admin.misc.ForgeHeaderResultProducer;
 import com.bolyartech.forge.android.task.ForgeAndroidTaskExecutor;
-import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
-import com.bolyartech.forge.base.exchange.ForgeExchangeHelperImpl;
-import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.ResultProducer;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelper;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelperImpl;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
+import com.bolyartech.forge.base.exchange.forge.ForgeHeaderResultProducer;
 import com.bolyartech.forge.base.task.ForgeExchangeManager;
+import com.bolyartech.forge.base.task.TaskExecutor;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -21,16 +22,10 @@ import dagger.Provides;
 @Module(includes = {HttpsDaggerModule.class})
 public class ExchangeDaggerModule {
     private final String mBaseUrl;
-    private final ForgeExchangeManager mForgeExchangeManager;
-    private final ForgeAndroidTaskExecutor mForgeAndroidTaskExecutor;
 
 
-    public ExchangeDaggerModule(String baseUrl,
-                                ForgeExchangeManager forgeExchangeManager,
-                                ForgeAndroidTaskExecutor forgeAndroidTaskExecutor) {
+    public ExchangeDaggerModule(String baseUrl) {
         mBaseUrl = baseUrl;
-        mForgeExchangeManager = forgeExchangeManager;
-        mForgeAndroidTaskExecutor = forgeAndroidTaskExecutor;
     }
 
 
@@ -43,8 +38,8 @@ public class ExchangeDaggerModule {
 
     @Provides
     @Singleton
-    public ForgeExchangeManager provideForgeExchangeManager() {
-        return mForgeExchangeManager;
+    public ForgeExchangeManager provideForgeExchangeManager(ForgeAndroidTaskExecutor te) {
+        return new ForgeExchangeManager(te);
     }
 
 
@@ -59,7 +54,7 @@ public class ExchangeDaggerModule {
     @Provides
     @Singleton
     public ForgeAndroidTaskExecutor provideTaskExecutor() {
-        return mForgeAndroidTaskExecutor;
+        return new ForgeAndroidTaskExecutor();
     }
 
 

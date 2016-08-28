@@ -2,6 +2,7 @@ package com.bolyartech.forge.admin.units.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.Menu;
@@ -15,10 +16,11 @@ import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.DoesLogin;
+import com.bolyartech.forge.admin.misc.PerformsLogin;
 import com.bolyartech.forge.admin.units.admin_user.admin_users_list.Act_AdminUsersList;
 import com.bolyartech.forge.admin.units.login.Act_Login;
 import com.bolyartech.forge.admin.units.user.users.Act_Users;
-import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
+import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.android.misc.ViewUtils;
 
@@ -27,9 +29,11 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import static com.bolyartech.forge.android.app_unit.OperationResidentComponent.*;
 
-public class Act_Main extends SessionActivity<Res_Main> implements StatefulResidentComponent.Listener,
-        DoesLogin, Df_CommWait.Listener {
+
+public class Act_Main extends SessionActivity<Res_Main> implements Listener,
+        DoesLogin, Df_CommWait.Listener, PerformsLogin {
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
@@ -74,7 +78,7 @@ public class Act_Main extends SessionActivity<Res_Main> implements StatefulResid
 
         ViewUtils.initButton(view, R.id.btn_login, v -> {
             if (mLoginPrefs.hasLoginCredentials()) {
-                getResidentComponent().login();
+                getResident().login();
             } else {
                 Intent intent = new Intent(Act_Main.this, Act_Login.class);
                 startActivity(intent);
@@ -114,7 +118,7 @@ public class Act_Main extends SessionActivity<Res_Main> implements StatefulResid
         int id = item.getItemId();
 
         if (id == R.id.ab_logout) {
-            getResidentComponent().logout();
+            getResident().logout();
         } else if (id == R.id.ab_login_as) {
             Intent intent = new Intent(Act_Main.this, Act_Login.class);
             startActivity(intent);
@@ -127,10 +131,11 @@ public class Act_Main extends SessionActivity<Res_Main> implements StatefulResid
 
     @Override
     public void onCommWaitDialogCancelled() {
-        getResidentComponent().abortLogin();
+        getResident().abortLogin();
     }
 
 
+    @NonNull
     @Override
     public Res_Main createResidentComponent() {
         return mRes_MainImplProvider.get();
@@ -141,11 +146,11 @@ public class Act_Main extends SessionActivity<Res_Main> implements StatefulResid
     public void onResume() {
         super.onResume();
 
-        handleState(getResidentComponent().getState());
+        handleState(getResident().getOpState());
     }
 
 
-    private synchronized void handleState(Res_Main.State state) {
+    private synchronized void handleState(OpState state) {
         mLogger.debug("State: {}", state);
         invalidateOptionsMenu();
         switch (state) {
@@ -161,35 +166,36 @@ public class Act_Main extends SessionActivity<Res_Main> implements StatefulResid
                 }
 
                 break;
-            case SESSION_STARTED_OK:
-                MyAppDialogs.hideCommWaitDialog(getFragmentManager());
-                MyAppDialogs.hideLoggingInDialog(getFragmentManager());
-                screenModeLoggedIn();
-                getResidentComponent().stateHandled();
-                break;
-            case SESSION_START_FAIL:
-                MyAppDialogs.showCommProblemDialog(getFragmentManager());
-                getResidentComponent().stateHandled();
-                screenModeNotLoggedIn();
-                break;
-            case LOGGING_IN:
+            case BUSY:
                 MyAppDialogs.showLoggingInDialog(getFragmentManager());
                 break;
-            case LOGIN_FAIL:
+            case COMPLETED:
                 MyAppDialogs.hideLoggingInDialog(getFragmentManager());
-                MyAppDialogs.showCommProblemDialog(getFragmentManager());
-                getResidentComponent().stateHandled();
-                screenModeNotLoggedIn();
+                handleCompleted();
+                getRes().ack();
                 break;
-            case LOGIN_INVALID:
-                MyAppDialogs.hideLoggingInDialog(getFragmentManager());
-                MyAppDialogs.showInvalidAutologinDialog(getFragmentManager());
-                getResidentComponent().stateHandled();
-                screenModeNotLoggedIn();
-                break;
-            case UPGRADE_NEEDED:
-                MyAppDialogs.showUpgradeNeededDialog(getFragmentManager());
-                break;
+        }
+
+
+    }
+
+
+    private void handleCompleted() {
+        if (getRes().isSuccess()) {
+            screenModeLoggedIn();
+        } else {
+            switch (getRes().getLoginError()) {
+                case INVALID_LOGIN:
+                    MyAppDialogs.showInvalidAutologinDialog(getFragmentManager());
+                    break;
+                case FAILED:
+                    MyAppDialogs.showCommProblemDialog(getFragmentManager());
+                    screenModeNotLoggedIn();
+                    break;
+                case UPGRADE_NEEDED:
+                    MyAppDialogs.showUpgradeNeededDialog(getFragmentManager());
+                    break;
+            }
         }
     }
 
@@ -222,8 +228,7 @@ public class Act_Main extends SessionActivity<Res_Main> implements StatefulResid
 
 
     @Override
-    public void onResidentStateChanged() {
-        handleState(getResidentComponent().getState());
+    public void onResidentOperationStateChanged() {
+        handleState(getRes().getOpState());
     }
-
 }

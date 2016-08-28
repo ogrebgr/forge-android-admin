@@ -1,15 +1,14 @@
 package com.bolyartech.forge.admin.units.main;
 
-import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
+import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeManagerListener;
 
 
 /**
  * Created by ogre on 2015-10-05
  */
-public interface Res_Main extends StatefulResidentComponent<Res_Main.State> {
+public interface Res_Main extends OperationResidentComponent, ForgeExchangeManagerListener {
     void login();
-
-    void startSession();
 
     void abortLogin();
 
@@ -17,18 +16,19 @@ public interface Res_Main extends StatefulResidentComponent<Res_Main.State> {
 
     void internetAvailable();
 
-    void stateHandled();
-
     void onConnectivityChange();
 
-    enum State{
-        IDLE,
-        LOGGING_IN,
-        STARTING_SESSION,
-        SESSION_STARTED_OK,
-        SESSION_START_FAIL,
-        LOGIN_INVALID,
-        LOGIN_FAIL,
+    LoginError getLoginError();
+
+    enum LoginError {
+        INVALID_LOGIN,
+        FAILED,
+        UPGRADE_NEEDED
+    }
+
+
+    enum AutoregisteringError {
+        FAILED,
         UPGRADE_NEEDED
     }
 }

@@ -49,14 +49,11 @@ public class DefaultAppDaggerComponent {
     public static AppDaggerComponent create(App app, boolean debug) {
         HttpsDaggerModule httpsDaggerModule = new HttpsDaggerModule(createOkHttpClient(app, debug));
 
-        AppUnitManager AppUnitManager = new AppUnitManager();
-
         return DaggerAppDaggerComponent.builder().
                 appDaggerModule(createAppDaggerModule(app)).
                 appInfoDaggerModule(createAppInfoDaggerModule(app)).
-                exchangeDaggerModule(createExchangeDaggerModule(AppUnitManager, app)).
+                exchangeDaggerModule(createExchangeDaggerModule(app)).
                 httpsDaggerModule(httpsDaggerModule).
-                unitManagerDaggerModule(new UnitManagerDaggerModule(AppUnitManager)).
                 build();
 
     }
@@ -171,16 +168,8 @@ public class DefaultAppDaggerComponent {
     }
 
 
-    public static ExchangeDaggerModule createExchangeDaggerModule(AppUnitManager AppUnitManager, App app) {
-        ForgeAndroidTaskExecutor te = new ForgeAndroidTaskExecutor();
-        ForgeExchangeManager fem = new ForgeExchangeManager(te);
-
-        fem.addListener(AppUnitManager);
-        fem.start();
-
-        return new ExchangeDaggerModule(app.getString(R.string.build_conf_base_url),
-                fem,
-                te);
+    public static ExchangeDaggerModule createExchangeDaggerModule(App app) {
+        return new ExchangeDaggerModule(app.getString(R.string.build_conf_base_url));
     }
 
 

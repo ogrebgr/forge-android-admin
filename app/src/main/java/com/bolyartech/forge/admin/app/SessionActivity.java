@@ -2,43 +2,51 @@ package com.bolyartech.forge.admin.app;
 
 import android.content.Intent;
 
+import com.bolyartech.forge.admin.misc.PerformsLogin;
 import com.bolyartech.forge.admin.units.main.Act_Main;
-import com.bolyartech.forge.admin.misc.DoesLogin;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
-
-import org.slf4j.LoggerFactory;
+import com.bolyartech.forge.base.session.Session;
 
 import javax.inject.Inject;
 
 
-abstract public class SessionActivity<T extends ResidentComponent> extends UnitBaseActivity<T> {
-    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+abstract public class SessionActivity<T extends ResidentComponent>
+        extends UnitBaseActivity<T> {
 
     @Inject
     Session mSession;
+
+    @Inject
+    CurrentUserHolder mCurrentUserHolder;
 
 
     @Override
     public void onResume() {
         super.onResume();
 
-        if (!(this instanceof DoesLogin)) {
+        if (!(this instanceof PerformsLogin)) {
             if (!mSession.isLoggedIn()) {
-                mLogger.warn("Session EXPIRED. Going home.");
                 goHome();
             }
         }
     }
 
 
-    public Session getSession() {
+    protected Session getSession() {
         return mSession;
     }
 
 
-    public void goHome() {
+    protected void goHome() {
         Intent intent = new Intent(getApplicationContext(), Act_Main.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
+
+
+    protected CurrentUser getCurrentUser() {
+        return mCurrentUserHolder.getCurrentUser();
+    }
+
+
 }

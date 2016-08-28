@@ -2,8 +2,8 @@ package com.bolyartech.forge.admin.dagger;
 
 
 
-import com.bolyartech.forge.admin.app.Session;
-import com.bolyartech.forge.admin.app.SessionImpl;
+import com.bolyartech.forge.base.session.Session;
+import com.bolyartech.forge.base.session.SessionImpl;
 
 import javax.inject.Singleton;
 

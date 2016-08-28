@@ -1,21 +1,12 @@
 package com.bolyartech.forge.admin.units.admin_user.admin_user_create;
 
-import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
+import com.bolyartech.forge.android.app_unit.SideEffectOperationResidentComponent;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeManagerListener;
 
 
-public interface Res_AdminUserCreate extends StatefulResidentComponent<Res_AdminUserCreate.State> {
-    void stateHandled();
+public interface Res_AdminUserCreate extends SideEffectOperationResidentComponent<Void, Integer>, ForgeExchangeManagerListener {
     void save(String username,
               String name,
               String password,
               boolean superAdmin);
-
-    int getLastError();
-
-    enum State {
-        IDLE,
-        SAVING,
-        SAVE_OK,
-        SAVE_FAIL
-    }
 }

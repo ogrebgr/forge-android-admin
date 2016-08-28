@@ -1,12 +1,10 @@
 package com.bolyartech.forge.admin.units.admin_user.admin_user_chpwd;
 
-import com.bolyartech.forge.admin.app.BasicResponseCodes;
-import com.bolyartech.forge.admin.app.Session;
-import com.bolyartech.forge.admin.app.SessionResidentComponent;
-import com.bolyartech.forge.android.misc.NetworkInfoProvider;
-import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
-import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
+import com.bolyartech.forge.android.app_unit.AbstractSideEffectOperationResidentComponent;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
+import com.bolyartech.forge.base.exchange.forge.BasicResponseCodes;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelper;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 import com.bolyartech.forge.base.task.ForgeExchangeManager;
 
 import org.slf4j.LoggerFactory;
@@ -14,19 +12,19 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class Res_AdminUserChpwdImpl extends SessionResidentComponent<Res_AdminUserChpwd.State> implements Res_AdminUserChpwd {
+public class Res_AdminUserChpwdImpl extends AbstractSideEffectOperationResidentComponent<Void, Integer> implements Res_AdminUserChpwd {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private volatile Long mSaveXId;
     private int mLastError;
 
+    private final ForgeExchangeHelper mForgeExchangeHelper;
+
 
     @Inject
-    public Res_AdminUserChpwdImpl(ForgeExchangeHelper forgeExchangeHelper,
-                                  Session session,
-                                  NetworkInfoProvider networkInfoProvider) {
+    public Res_AdminUserChpwdImpl(ForgeExchangeHelper forgeExchangeHelper) {
 
-        super(State.IDLE, forgeExchangeHelper, session, networkInfoProvider);
+        mForgeExchangeHelper = forgeExchangeHelper;
     }
 
 
@@ -34,15 +32,15 @@ public class Res_AdminUserChpwdImpl extends SessionResidentComponent<Res_AdminUs
 
     @Override
     public void save(long userId, String password) {
-        if (getState() == State.IDLE) {
+        if (isIdle()) {
             mLastError = 0;
-            switchToState(State.SAVING);
+            switchToBusyState();
 
-            ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("change_admin_password");
+            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("change_admin_password");
             b.addPostParameter("user", Long.toString(userId));
             b.addPostParameter("new_password", password);
 
-            ForgeExchangeManager em = getForgeExchangeManager();
+            ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
             mSaveXId = em.generateTaskId();
             em.executeExchange(b.build(), mSaveXId);
         } else {
@@ -52,13 +50,7 @@ public class Res_AdminUserChpwdImpl extends SessionResidentComponent<Res_AdminUs
 
 
     @Override
-    public int getLastError() {
-        return  mLastError;
-    }
-
-
-    @Override
-    public void onSessionExchangeOutcome(long exchangeId, boolean isSuccess, ForgeExchangeResult result) {
+    public void onExchangeOutcome(long exchangeId, boolean isSuccess, ForgeExchangeResult result) {
         if (exchangeId == mSaveXId) {
             handleSaveOutcome(isSuccess, result);
         }
@@ -71,24 +63,16 @@ public class Res_AdminUserChpwdImpl extends SessionResidentComponent<Res_AdminUs
 
             if (code > 0) {
                 if (code == BasicResponseCodes.Oks.OK.getCode()) {
-                    switchToState(State.SAVE_OK);
+                    switchToCompletedStateSuccess();
                 } else {
-                    switchToState(State.SAVE_FAIL);
+                    switchToCompletedStateFail();
                 }
             } else {
                 mLastError = code;
-                switchToState(State.SAVE_FAIL);
+                switchToCompletedStateFail();
             }
         } else {
-            switchToState(State.SAVE_FAIL);
-        }
-    }
-
-
-    @Override
-    public void stateHandled() {
-        if (isInOneOfStates(State.SAVE_OK, State.SAVE_FAIL)) {
-            resetState();
+            switchToCompletedStateFail();
         }
     }
 }

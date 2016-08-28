@@ -1,14 +1,16 @@
 package com.bolyartech.forge.admin.units.login;
 
 import com.bolyartech.forge.admin.app.AppConfiguration;
-import com.bolyartech.forge.admin.app.BasicResponseCodes;
+import com.bolyartech.forge.admin.app.AuthorizationResponseCodes;
+import com.bolyartech.forge.admin.app.CurrentUser;
+import com.bolyartech.forge.admin.app.CurrentUserHolder;
 import com.bolyartech.forge.admin.app.LoginPrefs;
-import com.bolyartech.forge.admin.app.Session;
-import com.bolyartech.forge.admin.app.SessionResidentComponent;
-import com.bolyartech.forge.android.misc.NetworkInfoProvider;
-import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
-import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
+import com.bolyartech.forge.android.app_unit.AbstractOperationResidentComponent;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
+import com.bolyartech.forge.base.exchange.forge.BasicResponseCodes;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelper;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
+import com.bolyartech.forge.base.session.Session;
 import com.bolyartech.forge.base.task.ForgeExchangeManager;
 
 import org.json.JSONException;
@@ -21,9 +23,7 @@ import javax.inject.Inject;
 /**
  * Created by ogre on 2016-01-05 14:26
  */
-public class Res_LoginImpl extends SessionResidentComponent<Res_Login.State> implements Res_Login {
-    private BasicResponseCodes.Errors mLastError;
-
+public class Res_LoginImpl extends AbstractOperationResidentComponent implements Res_Login {
     private volatile long mLoginXId;
     private volatile boolean mAbortLogin = false;
 
@@ -35,36 +35,39 @@ public class Res_LoginImpl extends SessionResidentComponent<Res_Login.State> imp
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
+    private LoginError mLoginError;
+    private final ForgeExchangeHelper mForgeExchangeHelper;
+    private final Session mSession;
+    private final CurrentUserHolder mCurrentUserHolder;
+
 
     @Inject
     public Res_LoginImpl(AppConfiguration appConfiguration,
                          ForgeExchangeHelper forgeExchangeHelper,
                          Session session,
-                         NetworkInfoProvider networkInfoProvider) {
-
-        super(State.IDLE,
-                forgeExchangeHelper,
-                session,
-                networkInfoProvider);
+                         CurrentUserHolder currentUserHolder) {
 
         mAppConfiguration = appConfiguration;
+        mForgeExchangeHelper = forgeExchangeHelper;
+        mSession = session;
+        mCurrentUserHolder = currentUserHolder;
     }
 
 
     @Override
     public void login(String username, String password) {
-        if (getState() == State.IDLE) {
-            switchToState(State.LOGGING_IN);
+        if (isIdle()) {
+            switchToBusyState();
             mLastUsedUsername = username;
             mLastUsedPassword = password;
 
-            ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("login");
+            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("login");
             b.addPostParameter("username", username);
             b.addPostParameter("password", password);
             b.addPostParameter("app_type", "1");
             b.addPostParameter("app_version", mAppConfiguration.getAppVersion());
 
-            ForgeExchangeManager em = getForgeExchangeManager();
+            ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
             mLoginXId = em.generateTaskId();
             em.executeExchange(b.build(), mLoginXId);
         } else {
@@ -73,23 +76,24 @@ public class Res_LoginImpl extends SessionResidentComponent<Res_Login.State> imp
     }
 
 
-    @Override
-    public BasicResponseCodes.Errors getLastError() {
-        return mLastError;
-    }
-
 
     @Override
     public void abortLogin() {
         mAbortLogin = true;
-        switchToState(State.IDLE);
+        switchToIdleState();
     }
 
 
     @Override
-    public void onSessionExchangeOutcome(long exchangeId, boolean isSuccess, ForgeExchangeResult result) {
+    public LoginError getLoginError() {
+        return mLoginError;
+    }
+
+
+    @Override
+    public void onExchangeOutcome(long exchangeId, boolean isSuccess, ForgeExchangeResult result) {
         if (exchangeId == mLoginXId) {
-            mLastError = null;
+            mLoginError = null;
             if (!mAbortLogin) {
                 if (isSuccess) {
                     int code = result.getCode();
@@ -101,52 +105,48 @@ public class Res_LoginImpl extends SessionResidentComponent<Res_Login.State> imp
                                 int sessionTtl = jobj.getInt("session_ttl");
                                 JSONObject sessionInfo = jobj.optJSONObject("session_info");
                                 if (sessionInfo != null) {
-                                    getSession().startSession(sessionTtl, Session.Info.fromJson(sessionInfo));
-                                    mLogger.debug("App login OK");
+                                    mCurrentUserHolder.setCurrentUser(new CurrentUser(sessionInfo.getLong("user_id"),
+                                            sessionInfo.getBoolean("super_admin")));
+
+                                    mSession.startSession(sessionTtl);
 
                                     LoginPrefs lp = mAppConfiguration.getLoginPrefs();
                                     lp.setUsername(mLastUsedUsername);
                                     lp.setPassword(mLastUsedPassword);
                                     lp.save();
 
-                                    startSession();
+                                    mLogger.debug("App login OK");
+                                    switchToCompletedStateSuccess();
                                 } else {
                                     mLogger.error("Missing session info");
-                                    switchToState(State.LOGIN_FAIL);
-
+                                    mLoginError = LoginError.FAILED;
+                                    switchToCompletedStateFail();
                                 }
                             } catch (JSONException e) {
                                 mLogger.warn("Login exchange failed because cannot parse JSON");
-                                switchToState(State.LOGIN_FAIL);
+                                mLoginError = LoginError.FAILED;
+                                switchToCompletedStateFail();
                             }
                         } else {
                             // unexpected positive code
-                            switchToState(State.LOGIN_FAIL);
+                            mLoginError = LoginError.FAILED;
+                            switchToCompletedStateFail();
                         }
+                    } else if (code == BasicResponseCodes.Errors.UPGRADE_NEEDED.getCode()) {
+                        mLoginError = LoginError.UPGRADE_NEEDED;
+                        switchToCompletedStateFail();
+                    } else if (code == AuthorizationResponseCodes.Errors.INVALID_LOGIN.getCode()) {
+                        mLoginError = LoginError.INVALID_LOGIN;
+                        switchToCompletedStateFail();
                     } else {
-                        mLogger.warn("Login exchange failed with code {}", code);
-                        mLastError = BasicResponseCodes.Errors.fromInt(code);
-                        switchToState(State.LOGIN_FAIL);
+                        mLoginError = LoginError.FAILED;
+                        switchToCompletedStateFail();
                     }
                 } else {
-                    switchToState(State.LOGIN_FAIL);
+                    mLoginError = LoginError.FAILED;
+                    switchToCompletedStateFail();
                 }
             }
         }
-    }
-
-
-    private void startSession() {
-        // here is the place to initiate additional exchanges that retrieve app state/messages/etc
-        switchToState(State.SESSION_STARTED_OK);
-    }
-
-
-    @Override
-    public void stateHandled() {
-        if (isInOneOfStates(State.LOGIN_FAIL, State.SESSION_STARTED_OK, State.SESSION_START_FAIL)) {
-            resetState();
-        }
-
     }
 }

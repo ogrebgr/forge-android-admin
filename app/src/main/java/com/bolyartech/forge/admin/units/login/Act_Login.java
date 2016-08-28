@@ -7,12 +7,12 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.bolyartech.forge.admin.R;
-import com.bolyartech.forge.admin.app.BasicResponseCodes;
 import com.bolyartech.forge.admin.app.LoginPrefs;
 import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.DoesLogin;
-import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
+import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
+import com.bolyartech.forge.android.app_unit.OperationResidentComponent.OpState;
 import com.bolyartech.forge.android.misc.ViewUtils;
 import com.bolyartech.forge.base.misc.StringUtils;
 
@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_Login extends SessionActivity<Res_Login> implements StatefulResidentComponent.Listener,
+public class Act_Login extends SessionActivity<Res_Login> implements OperationResidentComponent.Listener,
         DoesLogin {
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
@@ -37,9 +37,6 @@ public class Act_Login extends SessionActivity<Res_Login> implements StatefulRes
 
     private EditText mEtUsername;
     private EditText mEtPassword;
-
-
-    private Res_Login mResident;
 
 
     @Override
@@ -72,7 +69,7 @@ public class Act_Login extends SessionActivity<Res_Login> implements StatefulRes
 
         ViewUtils.initButton(view, R.id.btn_login, v -> {
             if (isDataValid()) {
-                mResident.login(mEtUsername.getText().toString(), mEtPassword.getText().toString());
+                getRes().login(mEtUsername.getText().toString(), mEtPassword.getText().toString());
             }
         });
     }
@@ -102,67 +99,49 @@ public class Act_Login extends SessionActivity<Res_Login> implements StatefulRes
     public void onResume() {
         super.onResume();
 
-        mResident = (Res_Login) getResidentComponent();
-        handleState(mResident.getState());
+        handleState(getRes().getOpState());
     }
 
 
-    private void handleState(Res_Login.State state) {
+    private void handleState(OpState state) {
         switch (state) {
             case IDLE:
-                MyAppDialogs.hideCommWaitDialog(getFragmentManager());
+                MyAppDialogs.hideLoggingInDialog(getFragmentManager());
                 break;
-            case LOGGING_IN:
-                MyAppDialogs.showCommWaitDialog(getFragmentManager());
+            case BUSY:
+                MyAppDialogs.showLoggingInDialog(getFragmentManager());
                 break;
-            case LOGIN_FAIL:
-                handleLoginFail();
-                break;
-            case STARTING_SESSION:
-                MyAppDialogs.showCommWaitDialog(getFragmentManager());
-                break;
-            case SESSION_STARTED_OK:
-                MyAppDialogs.hideCommWaitDialog(getFragmentManager());
-                setResult(Activity.RESULT_OK);
-                finish();
-                break;
-            case SESSION_START_FAIL:
-                handleError();
+            case COMPLETED:
+                MyAppDialogs.hideLoggingInDialog(getFragmentManager());
+                handleCompleted();
                 break;
         }
     }
 
 
-    private void handleLoginFail() {
-        MyAppDialogs.hideCommWaitDialog(getFragmentManager());
-        if (mResident.getLastError() == BasicResponseCodes.Errors.INVALID_LOGIN) {
-            MyAppDialogs.showInvalidLoginDialog(getFragmentManager());
+    private void handleCompleted() {
+        if (getRes().isSuccess()) {
+            setResult(Activity.RESULT_OK);
+            finish();
         } else {
-            MyAppDialogs.showCommProblemDialog(getFragmentManager());
-        }
-    }
-
-
-    private void handleError() {
-        MyAppDialogs.hideCommWaitDialog(getFragmentManager());
-        if (mResident.getLastError() != null) {
-            switch (mResident.getLastError()) {
+            switch (getRes().getLoginError()) {
+                case INVALID_LOGIN:
+                    MyAppDialogs.showInvalidAutologinDialog(getFragmentManager());
+                    break;
+                case FAILED:
+                    MyAppDialogs.showCommProblemDialog(getFragmentManager());
+                    break;
                 case UPGRADE_NEEDED:
                     MyAppDialogs.showUpgradeNeededDialog(getFragmentManager());
                     break;
             }
+            getRes().ack();
         }
     }
 
 
     @Override
-    public void onResidentStateChanged() {
-        handleState(mResident.getState());
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onResidentOperationStateChanged() {
+        handleState(getRes().getOpState());
     }
 }

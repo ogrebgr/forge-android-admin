@@ -8,6 +8,8 @@ import com.bolyartech.forge.admin.dagger.DependencyInjector;
 import com.bolyartech.forge.android.app_unit.UnitApplication;
 import com.bolyartech.forge.android.task.ForgeAndroidTaskExecutor;
 import com.bolyartech.forge.base.misc.ForUnitTestsOnly;
+import com.bolyartech.forge.base.task.ForgeExchangeManager;
+import com.squareup.leakcanary.LeakCanary;
 
 import org.acra.ACRA;
 import org.acra.ACRAConfiguration;
@@ -32,10 +34,6 @@ public class App extends UnitApplication {
             .getSimpleName());
 
 
-    @Inject
-    ForgeAndroidTaskExecutor mForgeAndroidTaskExecutor;
-
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -52,6 +50,7 @@ public class App extends UnitApplication {
 
         if (getResources().getBoolean(R.bool.build_conf_dev_mode)) {
             enableStrictMode();
+            LeakCanary.install(this);
         }
     }
 
@@ -105,11 +104,5 @@ public class App extends UnitApplication {
 
         conf.setKeyStore(ks);
         ACRA.init(this, conf);
-    }
-
-
-    @ForUnitTestsOnly
-    public ForgeAndroidTaskExecutor getForgeAndroidTaskExecutor() {
-        return mForgeAndroidTaskExecutor;
     }
 }

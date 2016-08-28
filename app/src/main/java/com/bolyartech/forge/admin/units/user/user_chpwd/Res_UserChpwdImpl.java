@@ -1,12 +1,11 @@
 package com.bolyartech.forge.admin.units.user.user_chpwd;
 
-import com.bolyartech.forge.admin.app.BasicResponseCodes;
-import com.bolyartech.forge.admin.app.Session;
-import com.bolyartech.forge.admin.app.SessionResidentComponent;
-import com.bolyartech.forge.android.misc.NetworkInfoProvider;
-import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
-import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
+import com.bolyartech.forge.android.app_unit.AbstractSideEffectOperationResidentComponent;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
+import com.bolyartech.forge.base.exchange.forge.BasicResponseCodes;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelper;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeManagerListener;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 import com.bolyartech.forge.base.task.ForgeExchangeManager;
 
 import org.slf4j.LoggerFactory;
@@ -14,33 +13,32 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class Res_UserChpwdImpl extends SessionResidentComponent<Res_UserChpwd.State> implements Res_UserChpwd {
+public class Res_UserChpwdImpl extends AbstractSideEffectOperationResidentComponent<Void, Integer>
+        implements Res_UserChpwd {
+
+
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private volatile Long mSaveXId;
-    private int mLastError;
 
+    private final ForgeExchangeHelper mForgeExchangeHelper;
 
     @Inject
-    public Res_UserChpwdImpl(ForgeExchangeHelper forgeExchangeHelper,
-                             Session session,
-                             NetworkInfoProvider networkInfoProvider) {
-
-        super(State.IDLE, forgeExchangeHelper, session, networkInfoProvider);
+    public Res_UserChpwdImpl(ForgeExchangeHelper forgeExchangeHelper) {
+        mForgeExchangeHelper = forgeExchangeHelper;
     }
 
 
     @Override
     public void save(long userId, String password) {
-        if (getState() == State.IDLE) {
-            mLastError = 0;
-            switchToState(State.SAVING);
+        if (isIdle()) {
+            switchToBusyState();
 
-            ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("change_password");
+            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("change_password");
             b.addPostParameter("user", Long.toString(userId));
             b.addPostParameter("new_password", password);
 
-            ForgeExchangeManager em = getForgeExchangeManager();
+            ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
             mSaveXId = em.generateTaskId();
             em.executeExchange(b.build(), mSaveXId);
         } else {
@@ -50,13 +48,7 @@ public class Res_UserChpwdImpl extends SessionResidentComponent<Res_UserChpwd.St
 
 
     @Override
-    public int getLastError() {
-        return  mLastError;
-    }
-
-
-    @Override
-    public void onSessionExchangeOutcome(long exchangeId, boolean isSuccess, ForgeExchangeResult result) {
+    public void onExchangeOutcome(long exchangeId, boolean isSuccess, ForgeExchangeResult result) {
         if (exchangeId == mSaveXId) {
             handleSaveOutcome(isSuccess, result);
         }
@@ -69,24 +61,15 @@ public class Res_UserChpwdImpl extends SessionResidentComponent<Res_UserChpwd.St
 
             if (code > 0) {
                 if (code == BasicResponseCodes.Oks.OK.getCode()) {
-                    switchToState(State.SAVE_OK);
+                    switchToCompletedStateSuccess();
                 } else {
-                    switchToState(State.SAVE_FAIL);
+                    switchToCompletedStateFail();
                 }
             } else {
-                mLastError = code;
-                switchToState(State.SAVE_FAIL);
+                switchToCompletedStateFail(code);
             }
         } else {
-            switchToState(State.SAVE_FAIL);
-        }
-    }
-
-
-    @Override
-    public void stateHandled() {
-        if (isInOneOfStates(State.SAVE_OK, State.SAVE_FAIL)) {
-            resetState();
+            switchToCompletedStateFail();
         }
     }
 }

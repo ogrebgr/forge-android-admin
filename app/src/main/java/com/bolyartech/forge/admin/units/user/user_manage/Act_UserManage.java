@@ -2,6 +2,7 @@ package com.bolyartech.forge.admin.units.user.user_manage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +16,8 @@ import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.DoesLogin;
 import com.bolyartech.forge.admin.units.user.user_chpwd.Act_UserChpwd;
-import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
+import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
+import com.bolyartech.forge.android.app_unit.OperationResidentComponent.OpState;
 import com.bolyartech.forge.android.misc.ActivityUtils;
 import com.bolyartech.forge.android.misc.ViewUtils;
 
@@ -26,7 +28,7 @@ import javax.inject.Provider;
 
 
 public class Act_UserManage extends SessionActivity<Res_UserManage> implements
-        StatefulResidentComponent.Listener, DoesLogin, Df_CommWait.Listener {
+        OperationResidentComponent.Listener, DoesLogin, Df_CommWait.Listener {
 
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
@@ -40,8 +42,6 @@ public class Act_UserManage extends SessionActivity<Res_UserManage> implements
 
     @Inject
     Provider<Res_UserManageImpl> mRes_UserManageImplProvider;
-
-    private Res_UserManage mResident;
 
 
     @Override
@@ -88,6 +88,7 @@ public class Act_UserManage extends SessionActivity<Res_UserManage> implements
     }
 
 
+    @NonNull
     @Override
     public Res_UserManage createResidentComponent() {
         return mRes_UserManageImplProvider.get();
@@ -101,47 +102,46 @@ public class Act_UserManage extends SessionActivity<Res_UserManage> implements
     }
 
 
-    @Override
-    public void onResidentStateChanged() {
-        handleState(mResident.getState());
-    }
 
 
     @Override
     public void onResume() {
         super.onResume();
 
-        mResident = (Res_UserManage) getResidentComponent();
-        handleState(mResident.getState());
+        handleState(getRes().getOpState());
     }
 
 
-    private void handleState(Res_UserManage.State state) {
+    private void handleState(OpState state) {
         mLogger.debug("State: {}", state);
 
         switch(state) {
             case IDLE:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 break;
-            case DISABLING:
+            case BUSY:
                 MyAppDialogs.showCommWaitDialog(getFragmentManager());
                 break;
-            case DISABLE_OK:
-                mUser = new User(mUser.getId(),
-                        mUser.getUsername(),
-                        mResident.getDisableResult(),
-                        mUser.getScreenName());
+            case COMPLETED:
+                MyAppDialogs.hideCommWaitDialog(getFragmentManager());
+                handleCompleted();
+                getRes().ack();
+                break;
+        }
+    }
 
-                invalidateOptionsMenu();
-                mResident.stateHandled();
-                MyAppDialogs.hideCommWaitDialog(getFragmentManager());
-                showData();
-                break;
-            case DISABLE_FAIL:
-                mResident.stateHandled();
-                MyAppDialogs.hideCommWaitDialog(getFragmentManager());
-                MyAppDialogs.showCommProblemDialog(getFragmentManager());
-                break;
+
+    private void handleCompleted() {
+        if (getRes().isSuccess()) {
+            mUser = new User(mUser.getId(),
+                    mUser.getUsername(),
+                    getRes().getDisableResult(),
+                    mUser.getScreenName());
+
+            invalidateOptionsMenu();
+            showData();
+        } else {
+            MyAppDialogs.showCommProblemDialog(getFragmentManager());
         }
     }
 
@@ -150,7 +150,7 @@ public class Act_UserManage extends SessionActivity<Res_UserManage> implements
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.act__admin_user_manage, menu);
 
-        if (getSession().getInfo().isSuperAdmin()) {
+        if (getCurrentUser().isSuperadmin()) {
             if (mUser.isDisabled()) {
                 menu.findItem(R.id.ab_disable).setTitle(R.string.act__user_manage__mi_enable);
             } else {
@@ -170,9 +170,9 @@ public class Act_UserManage extends SessionActivity<Res_UserManage> implements
 
         if (id == R.id.ab_disable) {
             if (mUser.isDisabled()) {
-                mResident.enableUser(mUser);
+                getRes().enableUser(mUser);
             } else {
-                mResident.disableUser(mUser);
+                getRes().disableUser(mUser);
             }
         } else if (id == R.id.ab_chpwd) {
             Intent intent = new Intent(Act_UserManage.this, Act_UserChpwd.class);
@@ -181,5 +181,11 @@ public class Act_UserManage extends SessionActivity<Res_UserManage> implements
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onResidentOperationStateChanged() {
+        handleState(getRes().getOpState());
     }
 }

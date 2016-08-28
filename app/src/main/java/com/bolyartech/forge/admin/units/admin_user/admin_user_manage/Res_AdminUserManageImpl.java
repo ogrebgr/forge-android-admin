@@ -1,13 +1,11 @@
 package com.bolyartech.forge.admin.units.admin_user.admin_user_manage;
 
-import com.bolyartech.forge.admin.app.BasicResponseCodes;
-import com.bolyartech.forge.admin.app.Session;
-import com.bolyartech.forge.admin.app.SessionResidentComponent;
 import com.bolyartech.forge.admin.data.AdminUser;
-import com.bolyartech.forge.android.misc.NetworkInfoProvider;
-import com.bolyartech.forge.base.exchange.ForgeExchangeHelper;
-import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
+import com.bolyartech.forge.android.app_unit.AbstractOperationResidentComponent;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
+import com.bolyartech.forge.base.exchange.forge.BasicResponseCodes;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelper;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 import com.bolyartech.forge.base.task.ForgeExchangeManager;
 
 import org.json.JSONException;
@@ -17,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class Res_AdminUserManageImpl extends SessionResidentComponent<Res_AdminUserManage.State> implements Res_AdminUserManage {
+public class Res_AdminUserManageImpl extends AbstractOperationResidentComponent implements Res_AdminUserManage {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
 
@@ -25,20 +23,19 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent<Res_AdminU
 
     private boolean mDisableResult;
 
+    private final ForgeExchangeHelper mForgeExchangeHelper;
+
 
     @Inject
-    public Res_AdminUserManageImpl(ForgeExchangeHelper forgeExchangeHelper,
-                                   Session session,
-                                   NetworkInfoProvider networkInfoProvider) {
-
-        super(State.IDLE, forgeExchangeHelper, session, networkInfoProvider);
+    public Res_AdminUserManageImpl(ForgeExchangeHelper forgeExchangeHelper) {
+        mForgeExchangeHelper = forgeExchangeHelper;
     }
 
 
     @Override
     public void disableUser(AdminUser user) {
-        if (getState() == State.IDLE) {
-            switchToState(State.DISABLING);
+        if (isIdle()) {
+            switchToBusyState();
             disableEnable(user.getId(), true);
         } else {
             throw new IllegalStateException("Not in IDLE state");
@@ -47,11 +44,11 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent<Res_AdminU
 
 
     private void disableEnable(long id, boolean disable) {
-        ForgePostHttpExchangeBuilder b = createForgePostHttpExchangeBuilder("admin_user_disable");
+        ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("admin_user_disable");
         b.addPostParameter("user", Long.toString(id));
         b.addPostParameter("disable", disable ? "1" : "0");
 
-        ForgeExchangeManager em = getForgeExchangeManager();
+        ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
         mDisableXId = em.generateTaskId();
         em.executeExchange(b.build(), mDisableXId);
     }
@@ -59,8 +56,8 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent<Res_AdminU
 
     @Override
     public void enableUser(AdminUser user) {
-        if (getState() == State.IDLE) {
-            switchToState(State.DISABLING);
+        if (isIdle()) {
+            switchToBusyState();
             disableEnable(user.getId(), false);
         } else {
             throw new IllegalStateException("Not in IDLE state");
@@ -81,7 +78,7 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent<Res_AdminU
 
 
     @Override
-    public void onSessionExchangeOutcome(long exchangeId, boolean isSuccess, ForgeExchangeResult result) {
+    public void onExchangeOutcome(long exchangeId, boolean isSuccess, ForgeExchangeResult result) {
         if (exchangeId == mDisableXId) {
             handleDisableResult(isSuccess, result);
         }
@@ -97,26 +94,19 @@ public class Res_AdminUserManageImpl extends SessionResidentComponent<Res_AdminU
                     try {
                         JSONObject jobj = new JSONObject(result.getPayload());
                         mDisableResult = jobj.getBoolean("disabled");
-                        switchToState(State.DISABLE_OK);
+
+                        switchToCompletedStateSuccess();
                     } catch (JSONException e) {
-                        switchToState(State.DISABLE_FAIL);
+                        switchToCompletedStateFail();
                     }
                 } else {
-                    switchToState(State.DISABLE_FAIL);
+                    switchToCompletedStateFail();
                 }
             } else {
-                switchToState(State.DISABLE_FAIL);
+                switchToCompletedStateFail();
             }
         } else {
-            switchToState(State.DISABLE_FAIL);
-        }
-    }
-
-
-    @Override
-    public void stateHandled() {
-        if (isInOneOfStates(State.DISABLE_OK, State.DISABLE_FAIL)) {
-            resetState();
+            switchToCompletedStateFail();
         }
     }
 }

@@ -2,6 +2,7 @@ package com.bolyartech.forge.admin.units.admin_user.admin_user_create;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +16,7 @@ import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.AdminResponseCodes;
-import com.bolyartech.forge.android.app_unit.StatefulResidentComponent;
+import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
 import com.bolyartech.forge.android.misc.ViewUtils;
 import com.google.common.base.Strings;
 
@@ -26,7 +27,7 @@ import javax.inject.Provider;
 
 
 public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> implements
-        StatefulResidentComponent.Listener, Df_CommWait.Listener {
+        OperationResidentComponent.Listener, Df_CommWait.Listener {
 
 
     private EditText mEtUsername;
@@ -39,8 +40,6 @@ public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> im
     @Inject
     Provider<Res_AdminUserCreateImpl> mRes_AdminUserCreateImplProvider;
 
-    private Res_AdminUserCreate mResident;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +51,7 @@ public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> im
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (getSession().getInfo().isSuperAdmin()) {
+        if (getCurrentUser().isSuperadmin()) {
             initViews(getWindow().getDecorView());
         } else {
             finish();
@@ -63,8 +62,7 @@ public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> im
     public void onResume() {
         super.onResume();
 
-        mResident = (Res_AdminUserCreate) getResidentComponent();
-        handleState(mResident.getState());
+        handleState(getRes().getOpState());
     }
 
 
@@ -83,41 +81,38 @@ public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> im
     }
 
 
+    @NonNull
     @Override
     public Res_AdminUserCreate createResidentComponent() {
         return mRes_AdminUserCreateImplProvider.get();
     }
 
 
-    @Override
-    public void onResidentStateChanged() {
-        handleState(mResident.getState());
-    }
-
-
-    private void handleState(Res_AdminUserCreate.State state) {
+    private void handleState(OperationResidentComponent.OpState state) {
         switch(state) {
             case IDLE:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 break;
-            case SAVING:
+            case BUSY:
                 MyAppDialogs.showCommWaitDialog(getFragmentManager());
                 break;
-            case SAVE_OK:
-                MyAppDialogs.hideCommWaitDialog(getFragmentManager());
-                setResult(Activity.RESULT_OK);
-                finish();
-                break;
-            case SAVE_FAIL:
-                handlerFail();
+            case COMPLETED:
+                if (getRes().isSuccess()) {
+                    MyAppDialogs.hideCommWaitDialog(getFragmentManager());
+                    setResult(Activity.RESULT_OK);
+                    finish();
+                } else {
+                    handlerFail();
+                }
                 break;
         }
+        getRes().ack();
     }
 
 
     private void handlerFail() {
         MyAppDialogs.hideCommWaitDialog(getFragmentManager());
-        int errorCode = mResident.getLastError();
+        int errorCode = getRes().getLastError();
 
         if (errorCode == AdminResponseCodes.Errors.INVALID_USERNAME.getCode()) {
             mEtUsername.setError(getString(R.string.act__admin_user_create__err_invalid_username));
@@ -132,7 +127,6 @@ public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> im
             MyAppDialogs.showCommProblemDialog(getFragmentManager());
         }
 
-        mResident.stateHandled();
     }
 
 
@@ -150,7 +144,7 @@ public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> im
 
         if (id == R.id.ab_save) {
             if (check()) {
-                mResident.save(mEtUsername.getText().toString(),
+                getRes().save(mEtUsername.getText().toString(),
                         mEtName.getText().toString(),
                         mEtPassword.getText().toString(),
                         mCbSuperuser.isChecked());
@@ -210,5 +204,11 @@ public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> im
         }
 
         return ret;
+    }
+
+
+    @Override
+    public void onResidentOperationStateChanged() {
+        handleState(getRes().getOpState());
     }
 }
