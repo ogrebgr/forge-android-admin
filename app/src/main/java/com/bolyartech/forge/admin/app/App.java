@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 
 /**
@@ -34,11 +35,19 @@ public class App extends UnitApplication {
             .getSimpleName());
 
 
+    @Inject
+    AppUnitManager mAppUnitManager;
+
+    @Inject
+    ForgeExchangeManager mForgeExchangeManager;
+
+    @Inject
+    Provider<ForgeAndroidTaskExecutor> mForgeAndroidTaskExecutorProvider;
+
+
     @Override
     public void onCreate() {
         super.onCreate();
-
-        mLogger.debug("presni");
 
         initInjector();
 
@@ -52,6 +61,29 @@ public class App extends UnitApplication {
             enableStrictMode();
             LeakCanary.install(this);
         }
+
+        mForgeExchangeManager.addListener(mAppUnitManager);
+        mForgeExchangeManager.start(mForgeAndroidTaskExecutorProvider.get());
+    }
+
+
+    @Override
+    protected void onInterfaceResumed() {
+        super.onInterfaceResumed();
+
+        if (!mForgeExchangeManager.isStarted()) {
+            mForgeExchangeManager.addListener(mAppUnitManager);
+            mForgeExchangeManager.start(mForgeAndroidTaskExecutorProvider.get());
+        }
+    }
+
+
+    @Override
+    protected void onInterfacePaused() {
+        super.onInterfacePaused();
+
+        mForgeExchangeManager.removeListener(mAppUnitManager);
+        mForgeExchangeManager.shutdown();
     }
 
 

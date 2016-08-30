@@ -37,26 +37,16 @@ public class Res_MainImpl extends AbstractOperationResidentComponent implements 
 
     private LoginError mLoginError;
 
-    @Inject
-    AppUnitManager mMyAppUnitManager;
-
-    @Inject
-    ForgeExchangeManager mForgeExchangeManager;
-
 
 
     @Inject
     public Res_MainImpl(
-                        AppUnitManager myAppUnitManager,
-                        ForgeExchangeManager forgeExchangeManager,
                         ForgeExchangeHelper forgeExchangeHelper,
                         Session session,
                         NetworkInfoProvider networkInfoProvider,
                         AppConfiguration appConfiguration,
                         CurrentUserHolder currentUserHolder) {
 
-        mMyAppUnitManager = myAppUnitManager;
-        mForgeExchangeManager = forgeExchangeManager;
         mAppConfiguration = appConfiguration;
         mNetworkInfoProvider = networkInfoProvider;
         mForgeExchangeHelper = forgeExchangeHelper;
@@ -69,21 +59,10 @@ public class Res_MainImpl extends AbstractOperationResidentComponent implements 
     public void onCreate() {
         super.onCreate();
 
-        mForgeExchangeManager.addListener(mMyAppUnitManager);
-        mForgeExchangeManager.start();
-
 
         if (mNetworkInfoProvider.isConnected()) {
             init();
         }
-    }
-
-
-    @Override
-    public void onActivityFinishing() {
-        super.onActivityFinishing();
-        mForgeExchangeManager.removeListener(mMyAppUnitManager);
-        mForgeExchangeManager.shutdown();
     }
 
 

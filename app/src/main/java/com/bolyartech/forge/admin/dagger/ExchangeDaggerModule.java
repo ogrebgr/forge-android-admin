@@ -38,8 +38,8 @@ public class ExchangeDaggerModule {
 
     @Provides
     @Singleton
-    public ForgeExchangeManager provideForgeExchangeManager(ForgeAndroidTaskExecutor te) {
-        return new ForgeExchangeManager(te);
+    public ForgeExchangeManager provideForgeExchangeManager() {
+        return new ForgeExchangeManager();
     }
 
 
