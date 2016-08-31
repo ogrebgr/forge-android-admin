@@ -4,7 +4,7 @@ import com.bolyartech.forge.android.app_unit.SideEffectOperationResidentComponen
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeManagerListener;
 
 
-public interface Res_AdminUserCreate extends SideEffectOperationResidentComponent<Void, Integer>, ForgeExchangeManagerListener {
+public interface ResAdminUserCreate extends SideEffectOperationResidentComponent<Void, Integer>, ForgeExchangeManagerListener {
     void save(String username,
               String name,
               String password,

@@ -52,7 +52,6 @@ public class ExchangeDaggerModule {
 
 
     @Provides
-    @Singleton
     public ForgeAndroidTaskExecutor provideTaskExecutor() {
         return new ForgeAndroidTaskExecutor();
     }

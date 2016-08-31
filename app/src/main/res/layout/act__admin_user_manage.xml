@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".units.admin_user.admin_user_manage.Act_AdminUserManage">
+    tools:context=".units.admin_user.admin_user_manage.ActAdminUserManage">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

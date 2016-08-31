@@ -7,7 +7,7 @@ import com.bolyartech.forge.base.exchange.forge.ForgeExchangeManagerListener;
 /**
  * Created by ogre on 2015-10-05
  */
-public interface Res_Main extends OperationResidentComponent, ForgeExchangeManagerListener {
+public interface ResMain extends OperationResidentComponent, ForgeExchangeManagerListener {
     void login();
 
     void abortLogin();

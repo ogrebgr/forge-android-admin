@@ -11,7 +11,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:orientation="vertical"
-    tools:context="com.bolyartech.forge.admin.units.user.user_manage.Act_UserManage">
+    tools:context=".units.user.user_manage.ActUserManage">
 
     <TextView
         android:text="@string/act__user_manage__tv_username"

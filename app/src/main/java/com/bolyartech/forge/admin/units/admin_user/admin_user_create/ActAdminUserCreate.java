@@ -26,7 +26,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> implements
+public class ActAdminUserCreate extends SessionActivity<ResAdminUserCreate> implements
         OperationResidentComponent.Listener, Df_CommWait.Listener {
 
 
@@ -38,7 +38,7 @@ public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> im
 
 
     @Inject
-    Provider<Res_AdminUserCreateImpl> mRes_AdminUserCreateImplProvider;
+    Provider<ResAdminUserCreateImpl> mRes_AdminUserCreateImplProvider;
 
 
     @Override
@@ -83,7 +83,7 @@ public class Act_AdminUserCreate extends SessionActivity<Res_AdminUserCreate> im
 
     @NonNull
     @Override
-    public Res_AdminUserCreate createResidentComponent() {
+    public ResAdminUserCreate createResidentComponent() {
         return mRes_AdminUserCreateImplProvider.get();
     }
 

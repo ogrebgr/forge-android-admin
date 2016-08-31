@@ -5,7 +5,7 @@ import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeManagerListener;
 
 
-public interface Res_UserManage extends OperationResidentComponent, ForgeExchangeManagerListener {
+public interface ResUserManage extends OperationResidentComponent, ForgeExchangeManagerListener {
     void disableUser(User user);
     void enableUser(User user);
 

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class Res_AdminUserCreateImpl extends AbstractSideEffectOperationResidentComponent<Void, Integer> implements Res_AdminUserCreate {
+public class ResAdminUserCreateImpl extends AbstractSideEffectOperationResidentComponent<Void, Integer> implements ResAdminUserCreate {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private volatile Long mCreateXId;
@@ -21,7 +21,7 @@ public class Res_AdminUserCreateImpl extends AbstractSideEffectOperationResident
 
 
     @Inject
-    public Res_AdminUserCreateImpl(ForgeExchangeHelper forgeExchangeHelper) {
+    public ResAdminUserCreateImpl(ForgeExchangeHelper forgeExchangeHelper) {
         mForgeExchangeHelper = forgeExchangeHelper;
     }
 

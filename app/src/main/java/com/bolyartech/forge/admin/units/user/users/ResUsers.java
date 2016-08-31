@@ -7,7 +7,7 @@ import com.bolyartech.forge.base.exchange.forge.ForgeExchangeManagerListener;
 import java.util.List;
 
 
-public interface Res_Users extends OperationResidentComponent, ForgeExchangeManagerListener {
+public interface ResUsers extends OperationResidentComponent, ForgeExchangeManagerListener {
     void searchForUser(String pattern);
 
     List<User> getData();

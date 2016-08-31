@@ -5,15 +5,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 
-public class AppConfigurationImpl implements AppConfiguration {
+public class MyAppConfigurationImpl implements MyAppConfiguration {
     private final String mAppVersion;
 
     private final LoginPrefs mLoginPrefs;
 
 
     @Inject
-    public AppConfigurationImpl(@Named("app version") String appVersion,
-                                LoginPrefs loginPrefs
+    public MyAppConfigurationImpl(@Named("app version") String appVersion,
+                                  LoginPrefs loginPrefs
                                 ) {
         mAppVersion = appVersion;
         mLoginPrefs = loginPrefs;

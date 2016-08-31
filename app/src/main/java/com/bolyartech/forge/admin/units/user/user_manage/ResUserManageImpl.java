@@ -1,6 +1,6 @@
-package com.bolyartech.forge.admin.units.admin_user.admin_user_manage;
+package com.bolyartech.forge.admin.units.user.user_manage;
 
-import com.bolyartech.forge.admin.data.AdminUser;
+import com.bolyartech.forge.admin.data.User;
 import com.bolyartech.forge.android.app_unit.AbstractOperationResidentComponent;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.forge.BasicResponseCodes;
@@ -15,9 +15,8 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class Res_AdminUserManageImpl extends AbstractOperationResidentComponent implements Res_AdminUserManage {
+public class ResUserManageImpl extends AbstractOperationResidentComponent implements ResUserManage {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
-
 
     private volatile long mDisableXId;
 
@@ -25,15 +24,14 @@ public class Res_AdminUserManageImpl extends AbstractOperationResidentComponent 
 
     private final ForgeExchangeHelper mForgeExchangeHelper;
 
-
     @Inject
-    public Res_AdminUserManageImpl(ForgeExchangeHelper forgeExchangeHelper) {
+    public ResUserManageImpl(ForgeExchangeHelper forgeExchangeHelper) {
         mForgeExchangeHelper = forgeExchangeHelper;
     }
 
 
     @Override
-    public void disableUser(AdminUser user) {
+    public void disableUser(User user) {
         if (isIdle()) {
             switchToBusyState();
             disableEnable(user.getId(), true);
@@ -44,7 +42,7 @@ public class Res_AdminUserManageImpl extends AbstractOperationResidentComponent 
 
 
     private void disableEnable(long id, boolean disable) {
-        ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("admin_user_disable");
+        ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("user_disable");
         b.addPostParameter("user", Long.toString(id));
         b.addPostParameter("disable", disable ? "1" : "0");
 
@@ -55,19 +53,13 @@ public class Res_AdminUserManageImpl extends AbstractOperationResidentComponent 
 
 
     @Override
-    public void enableUser(AdminUser user) {
+    public void enableUser(User user) {
         if (isIdle()) {
             switchToBusyState();
             disableEnable(user.getId(), false);
         } else {
             throw new IllegalStateException("Not in IDLE state");
         }
-    }
-
-
-    @Override
-    public void delete(AdminUser user) {
-
     }
 
 
@@ -94,7 +86,6 @@ public class Res_AdminUserManageImpl extends AbstractOperationResidentComponent 
                     try {
                         JSONObject jobj = new JSONObject(result.getPayload());
                         mDisableResult = jobj.getBoolean("disabled");
-
                         switchToCompletedStateSuccess();
                     } catch (JSONException e) {
                         switchToCompletedStateFail();

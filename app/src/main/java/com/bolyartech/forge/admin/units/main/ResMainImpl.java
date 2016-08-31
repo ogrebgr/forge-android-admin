@@ -1,7 +1,6 @@
 package com.bolyartech.forge.admin.units.main;
 
-import com.bolyartech.forge.admin.app.AppConfiguration;
-import com.bolyartech.forge.admin.app.AppUnitManager;
+import com.bolyartech.forge.admin.app.MyAppConfiguration;
 import com.bolyartech.forge.admin.app.AuthorizationResponseCodes;
 import com.bolyartech.forge.admin.app.CurrentUser;
 import com.bolyartech.forge.admin.app.CurrentUserHolder;
@@ -22,10 +21,10 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class Res_MainImpl extends AbstractOperationResidentComponent implements Res_Main {
+public class ResMainImpl extends AbstractOperationResidentComponent implements ResMain {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
-    private final AppConfiguration mAppConfiguration;
+    private final MyAppConfiguration mMyAppConfiguration;
     private final NetworkInfoProvider mNetworkInfoProvider;
 
     private volatile long mLoginXId;
@@ -40,14 +39,14 @@ public class Res_MainImpl extends AbstractOperationResidentComponent implements 
 
 
     @Inject
-    public Res_MainImpl(
+    public ResMainImpl(
                         ForgeExchangeHelper forgeExchangeHelper,
                         Session session,
                         NetworkInfoProvider networkInfoProvider,
-                        AppConfiguration appConfiguration,
+                        MyAppConfiguration myAppConfiguration,
                         CurrentUserHolder currentUserHolder) {
 
-        mAppConfiguration = appConfiguration;
+        mMyAppConfiguration = myAppConfiguration;
         mNetworkInfoProvider = networkInfoProvider;
         mForgeExchangeHelper = forgeExchangeHelper;
         mSession = session;
@@ -68,7 +67,7 @@ public class Res_MainImpl extends AbstractOperationResidentComponent implements 
 
     private void init() {
         if (mNetworkInfoProvider.isConnected()) {
-            if (mAppConfiguration.getLoginPrefs().hasLoginCredentials()) {
+            if (mMyAppConfiguration.getLoginPrefs().hasLoginCredentials()) {
                 loginActual();
             }
         }
@@ -120,10 +119,10 @@ public class Res_MainImpl extends AbstractOperationResidentComponent implements 
             switchToBusyState();
 
             ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("login");
-            b.addPostParameter("username", mAppConfiguration.getLoginPrefs().getUsername());
-            b.addPostParameter("password", mAppConfiguration.getLoginPrefs().getPassword());
+            b.addPostParameter("username", mMyAppConfiguration.getLoginPrefs().getUsername());
+            b.addPostParameter("password", mMyAppConfiguration.getLoginPrefs().getPassword());
             b.addPostParameter("app_type", "1");
-            b.addPostParameter("app_version", mAppConfiguration.getAppVersion());
+            b.addPostParameter("app_version", mMyAppConfiguration.getAppVersion());
             b.addPostParameter("session_info", "1");
 
             ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();

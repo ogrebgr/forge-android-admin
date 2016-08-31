@@ -1,4 +1,4 @@
-package com.bolyartech.forge.admin.units.admin_user.admin_user_chpwd;
+package com.bolyartech.forge.admin.units.user.user_chpwd;
 
 import com.bolyartech.forge.android.app_unit.AbstractSideEffectOperationResidentComponent;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
@@ -12,31 +12,28 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class Res_AdminUserChpwdImpl extends AbstractSideEffectOperationResidentComponent<Void, Integer> implements Res_AdminUserChpwd {
+public class ResUserChpwdImpl extends AbstractSideEffectOperationResidentComponent<Void, Integer>
+        implements ResUserChpwd {
+
+
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private volatile Long mSaveXId;
-    private int mLastError;
 
     private final ForgeExchangeHelper mForgeExchangeHelper;
 
-
     @Inject
-    public Res_AdminUserChpwdImpl(ForgeExchangeHelper forgeExchangeHelper) {
-
+    public ResUserChpwdImpl(ForgeExchangeHelper forgeExchangeHelper) {
         mForgeExchangeHelper = forgeExchangeHelper;
     }
-
-
 
 
     @Override
     public void save(long userId, String password) {
         if (isIdle()) {
-            mLastError = 0;
             switchToBusyState();
 
-            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("change_admin_password");
+            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("change_password");
             b.addPostParameter("user", Long.toString(userId));
             b.addPostParameter("new_password", password);
 
@@ -68,8 +65,7 @@ public class Res_AdminUserChpwdImpl extends AbstractSideEffectOperationResidentC
                     switchToCompletedStateFail();
                 }
             } else {
-                mLastError = code;
-                switchToCompletedStateFail();
+                switchToCompletedStateFail(code);
             }
         } else {
             switchToCompletedStateFail();

@@ -3,7 +3,7 @@ package com.bolyartech.forge.admin.app;
 import android.content.Intent;
 
 import com.bolyartech.forge.admin.misc.PerformsLogin;
-import com.bolyartech.forge.admin.units.main.Act_Main;
+import com.bolyartech.forge.admin.units.main.ActMain;
 import com.bolyartech.forge.android.app_unit.ResidentComponent;
 import com.bolyartech.forge.base.session.Session;
 
@@ -38,7 +38,7 @@ abstract public class SessionActivity<T extends ResidentComponent>
 
 
     protected void goHome() {
-        Intent intent = new Intent(getApplicationContext(), Act_Main.class);
+        Intent intent = new Intent(getApplicationContext(), ActMain.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }

@@ -7,7 +7,6 @@ import com.bolyartech.forge.admin.dagger.DefaultAppDaggerComponent;
 import com.bolyartech.forge.admin.dagger.DependencyInjector;
 import com.bolyartech.forge.android.app_unit.UnitApplication;
 import com.bolyartech.forge.android.task.ForgeAndroidTaskExecutor;
-import com.bolyartech.forge.base.misc.ForUnitTestsOnly;
 import com.bolyartech.forge.base.task.ForgeExchangeManager;
 import com.squareup.leakcanary.LeakCanary;
 
@@ -30,13 +29,13 @@ import javax.inject.Provider;
  * Created by ogre on 2015-11-15 15:19
  */
 @ReportsCrashes(formUri = "placeholder")
-public class App extends UnitApplication {
+public class MyApp extends UnitApplication {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass()
             .getSimpleName());
 
 
     @Inject
-    AppUnitManager mAppUnitManager;
+    MyAppUnitManager mMyAppUnitManager;
 
     @Inject
     ForgeExchangeManager mForgeExchangeManager;
@@ -62,7 +61,7 @@ public class App extends UnitApplication {
             LeakCanary.install(this);
         }
 
-        mForgeExchangeManager.addListener(mAppUnitManager);
+        mForgeExchangeManager.addListener(mMyAppUnitManager);
         mForgeExchangeManager.start(mForgeAndroidTaskExecutorProvider.get());
     }
 
@@ -72,7 +71,7 @@ public class App extends UnitApplication {
         super.onInterfaceResumed();
 
         if (!mForgeExchangeManager.isStarted()) {
-            mForgeExchangeManager.addListener(mAppUnitManager);
+            mForgeExchangeManager.addListener(mMyAppUnitManager);
             mForgeExchangeManager.start(mForgeAndroidTaskExecutorProvider.get());
         }
     }
@@ -82,7 +81,7 @@ public class App extends UnitApplication {
     protected void onInterfacePaused() {
         super.onInterfacePaused();
 
-        mForgeExchangeManager.removeListener(mAppUnitManager);
+        mForgeExchangeManager.removeListener(mMyAppUnitManager);
         mForgeExchangeManager.shutdown();
     }
 

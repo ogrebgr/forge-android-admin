@@ -17,10 +17,9 @@ import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.DoesLogin;
 import com.bolyartech.forge.admin.misc.PerformsLogin;
-import com.bolyartech.forge.admin.units.admin_user.admin_users_list.Act_AdminUsersList;
-import com.bolyartech.forge.admin.units.login.Act_Login;
-import com.bolyartech.forge.admin.units.user.users.Act_Users;
-import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
+import com.bolyartech.forge.admin.units.admin_user.admin_users_list.ActAdminUsersList;
+import com.bolyartech.forge.admin.units.login.ActLogin;
+import com.bolyartech.forge.admin.units.user.users.ActUsers;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.android.misc.ViewUtils;
 
@@ -32,7 +31,7 @@ import javax.inject.Provider;
 import static com.bolyartech.forge.android.app_unit.OperationResidentComponent.*;
 
 
-public class Act_Main extends SessionActivity<Res_Main> implements Listener,
+public class ActMain extends SessionActivity<ResMain> implements Listener,
         DoesLogin, Df_CommWait.Listener, PerformsLogin {
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
@@ -49,7 +48,7 @@ public class Act_Main extends SessionActivity<Res_Main> implements Listener,
     LoginPrefs mLoginPrefs;
 
     @Inject
-    Provider<Res_MainImpl> mRes_MainImplProvider;
+    Provider<ResMainImpl> mRes_MainImplProvider;
 
 
     @Override
@@ -80,18 +79,18 @@ public class Act_Main extends SessionActivity<Res_Main> implements Listener,
             if (mLoginPrefs.hasLoginCredentials()) {
                 getResident().login();
             } else {
-                Intent intent = new Intent(Act_Main.this, Act_Login.class);
+                Intent intent = new Intent(ActMain.this, ActLogin.class);
                 startActivity(intent);
             }
         });
 
         ViewUtils.initButton(view, R.id.btn_admin_users, v -> {
-            Intent intent = new Intent(Act_Main.this, Act_AdminUsersList.class);
+            Intent intent = new Intent(ActMain.this, ActAdminUsersList.class);
             startActivity(intent);
         });
 
         ViewUtils.initButton(view, R.id.btn_users, v -> {
-            Intent intent = new Intent(Act_Main.this, Act_Users.class);
+            Intent intent = new Intent(ActMain.this, ActUsers.class);
             startActivity(intent);
         });
     }
@@ -120,7 +119,7 @@ public class Act_Main extends SessionActivity<Res_Main> implements Listener,
         if (id == R.id.ab_logout) {
             getResident().logout();
         } else if (id == R.id.ab_login_as) {
-            Intent intent = new Intent(Act_Main.this, Act_Login.class);
+            Intent intent = new Intent(ActMain.this, ActLogin.class);
             startActivity(intent);
         }
 
@@ -137,7 +136,7 @@ public class Act_Main extends SessionActivity<Res_Main> implements Listener,
 
     @NonNull
     @Override
-    public Res_Main createResidentComponent() {
+    public ResMain createResidentComponent() {
         return mRes_MainImplProvider.get();
     }
 

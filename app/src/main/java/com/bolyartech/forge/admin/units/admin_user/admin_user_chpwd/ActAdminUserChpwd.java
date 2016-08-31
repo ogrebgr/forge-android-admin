@@ -1,4 +1,4 @@
-package com.bolyartech.forge.admin.units.user.user_chpwd;
+package com.bolyartech.forge.admin.units.admin_user.admin_user_chpwd;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -26,17 +26,16 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_UserChpwd extends SessionActivity<Res_UserChpwd> implements OperationResidentComponent.Listener,
-        Df_CommWait.Listener {
+public class ActAdminUserChpwd extends SessionActivity<ResAdminUserChpwd> implements
+        Df_CommWait.Listener, OperationResidentComponent.Listener {
 
 
     public static final String PARAM_USER_ID = "user id";
     private EditText mEtPassword;
     private EditText mEtPassword2;
 
-
     @Inject
-    Provider<Res_UserChpwdImpl> mRes_AdminUserChpwdImplProvider;
+    Provider<ResAdminUserChpwdImpl> mRes_AdminUserChpwdImplProvider;
 
     private long mUserId;
 
@@ -92,8 +91,6 @@ public class Act_UserChpwd extends SessionActivity<Res_UserChpwd> implements Ope
                 } else {
                     handlerFail();
                 }
-
-                getRes().ack();
                 break;
         }
     }
@@ -117,7 +114,7 @@ public class Act_UserChpwd extends SessionActivity<Res_UserChpwd> implements Ope
 
 
     @Override
-    public Res_UserChpwd createResidentComponent() {
+    public ResAdminUserChpwd createResidentComponent() {
         return mRes_AdminUserChpwdImplProvider.get();
     }
 
@@ -149,6 +146,7 @@ public class Act_UserChpwd extends SessionActivity<Res_UserChpwd> implements Ope
                 ret = false;
             }
         }
+
 
         return ret;
     }

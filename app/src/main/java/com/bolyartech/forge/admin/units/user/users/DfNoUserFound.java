@@ -8,7 +8,7 @@ import android.os.Bundle;
 import com.bolyartech.forge.admin.R;
 
 
-public class Df_NoUserFound extends DialogFragment {
+public class DfNoUserFound extends DialogFragment {
     public static final String DIALOG_TAG = "Df_NoUserFound";
 
 

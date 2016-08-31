@@ -1,6 +1,6 @@
 package com.bolyartech.forge.admin.units.login;
 
-import com.bolyartech.forge.admin.app.AppConfiguration;
+import com.bolyartech.forge.admin.app.MyAppConfiguration;
 import com.bolyartech.forge.admin.app.AuthorizationResponseCodes;
 import com.bolyartech.forge.admin.app.CurrentUser;
 import com.bolyartech.forge.admin.app.CurrentUserHolder;
@@ -23,7 +23,7 @@ import javax.inject.Inject;
 /**
  * Created by ogre on 2016-01-05 14:26
  */
-public class Res_LoginImpl extends AbstractOperationResidentComponent implements Res_Login {
+public class ResLoginImpl extends AbstractOperationResidentComponent implements ResLogin {
     private volatile long mLoginXId;
     private volatile boolean mAbortLogin = false;
 
@@ -31,7 +31,7 @@ public class Res_LoginImpl extends AbstractOperationResidentComponent implements
     private String mLastUsedPassword;
 
 
-    private final AppConfiguration mAppConfiguration;
+    private final MyAppConfiguration mMyAppConfiguration;
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
@@ -42,12 +42,12 @@ public class Res_LoginImpl extends AbstractOperationResidentComponent implements
 
 
     @Inject
-    public Res_LoginImpl(AppConfiguration appConfiguration,
-                         ForgeExchangeHelper forgeExchangeHelper,
-                         Session session,
-                         CurrentUserHolder currentUserHolder) {
+    public ResLoginImpl(MyAppConfiguration myAppConfiguration,
+                        ForgeExchangeHelper forgeExchangeHelper,
+                        Session session,
+                        CurrentUserHolder currentUserHolder) {
 
-        mAppConfiguration = appConfiguration;
+        mMyAppConfiguration = myAppConfiguration;
         mForgeExchangeHelper = forgeExchangeHelper;
         mSession = session;
         mCurrentUserHolder = currentUserHolder;
@@ -65,7 +65,7 @@ public class Res_LoginImpl extends AbstractOperationResidentComponent implements
             b.addPostParameter("username", username);
             b.addPostParameter("password", password);
             b.addPostParameter("app_type", "1");
-            b.addPostParameter("app_version", mAppConfiguration.getAppVersion());
+            b.addPostParameter("app_version", mMyAppConfiguration.getAppVersion());
 
             ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
             mLoginXId = em.generateTaskId();
@@ -110,7 +110,7 @@ public class Res_LoginImpl extends AbstractOperationResidentComponent implements
 
                                     mSession.startSession(sessionTtl);
 
-                                    LoginPrefs lp = mAppConfiguration.getLoginPrefs();
+                                    LoginPrefs lp = mMyAppConfiguration.getLoginPrefs();
                                     lp.setUsername(mLastUsedUsername);
                                     lp.setPassword(mLastUsedPassword);
                                     lp.save();

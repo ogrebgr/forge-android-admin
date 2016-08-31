@@ -6,13 +6,13 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:name=".app.App"
+        android:name=".app.MyApp"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".units.main.Act_Main">
+        <activity android:name=".units.main.ActMain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -20,25 +20,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".units.login.Act_Login"
+            android:name=".units.login.ActLogin"
             android:label="@string/act__login__title"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".units.admin_user.admin_users_list.Act_AdminUsersList"
+            android:name=".units.admin_user.admin_users_list.ActAdminUsersList"
             android:label="@string/act__admin_users_list__title">
         </activity>
-        <activity android:name=".units.admin_user.admin_user_manage.Act_AdminUserManage">
+        <activity android:name=".units.admin_user.admin_user_manage.ActAdminUserManage">
         </activity>
-        <activity android:name=".units.admin_user.admin_user_create.Act_AdminUserCreate">
+        <activity android:name=".units.admin_user.admin_user_create.ActAdminUserCreate">
         </activity>
-        <activity android:name=".units.admin_user.admin_user_chpwd.Act_AdminUserChpwd">
+        <activity android:name=".units.admin_user.admin_user_chpwd.ActAdminUserChpwd">
         </activity>
-        <activity android:name=".units.user.users.Act_Users">
+        <activity android:name=".units.user.users.ActUsers">
         </activity>
-        <activity android:name=".units.user.user_manage.Act_UserManage">
+        <activity android:name=".units.user.user_manage.ActUserManage">
         </activity>
-        <activity android:name=".units.user.user_chpwd.Act_UserChpwd">
+        <activity android:name=".units.user.user_chpwd.ActUserChpwd">
         </activity>
     </application>
 

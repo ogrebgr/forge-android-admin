@@ -5,11 +5,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import com.bolyartech.forge.admin.R;
-import com.bolyartech.forge.admin.app.App;
-import com.bolyartech.forge.admin.app.AppUnitManager;
+import com.bolyartech.forge.admin.app.MyApp;
 import com.bolyartech.forge.admin.misc.LoggingInterceptor;
-import com.bolyartech.forge.android.task.ForgeAndroidTaskExecutor;
-import com.bolyartech.forge.base.task.ForgeExchangeManager;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
@@ -46,20 +43,20 @@ public class DefaultAppDaggerComponent {
     }
 
 
-    public static AppDaggerComponent create(App app, boolean debug) {
-        HttpsDaggerModule httpsDaggerModule = new HttpsDaggerModule(createOkHttpClient(app, debug));
+    public static AppDaggerComponent create(MyApp myApp, boolean debug) {
+        HttpsDaggerModule httpsDaggerModule = new HttpsDaggerModule(createOkHttpClient(myApp, debug));
 
         return DaggerAppDaggerComponent.builder().
-                appDaggerModule(createAppDaggerModule(app)).
-                appInfoDaggerModule(createAppInfoDaggerModule(app)).
-                exchangeDaggerModule(createExchangeDaggerModule(app)).
+                appDaggerModule(createAppDaggerModule(myApp)).
+                appInfoDaggerModule(createAppInfoDaggerModule(myApp)).
+                exchangeDaggerModule(createExchangeDaggerModule(myApp)).
                 httpsDaggerModule(httpsDaggerModule).
                 build();
 
     }
 
 
-    public static OkHttpClient createOkHttpClient(App app, boolean debug) {
+    public static OkHttpClient createOkHttpClient(MyApp myApp, boolean debug) {
         OkHttpClient.Builder b = new OkHttpClient.Builder();
         if (debug) {
             b.addInterceptor(new LoggingInterceptor());
@@ -80,13 +77,13 @@ public class DefaultAppDaggerComponent {
         } else {
 
             try {
-                KeyStore keyStore = createKeystore(app);
+                KeyStore keyStore = createKeystore(myApp);
 
                 KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
                 SSLContext sslContext = SSLContext.getInstance("SSL");
                 TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
                 trustManagerFactory.init(keyStore);
-                keyManagerFactory.init(keyStore, app.getString(R.string.bks_keystore_password).toCharArray());
+                keyManagerFactory.init(keyStore, myApp.getString(R.string.bks_keystore_password).toCharArray());
                 sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
                 b.sslSocketFactory(sslContext.getSocketFactory());
             } catch (KeyStoreException | KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException e) {
@@ -148,12 +145,12 @@ public class DefaultAppDaggerComponent {
     }
 
 
-    public static KeyStore createKeystore(App app) {
-        InputStream is = app.getResources().openRawResource(R.raw.forge_skeleton);
+    public static KeyStore createKeystore(MyApp myApp) {
+        InputStream is = myApp.getResources().openRawResource(R.raw.forge_skeleton);
         KeyStore ks;
         try {
             ks = KeyStore.getInstance("BKS");
-            ks.load(is, app.getString(R.string.bks_keystore_password).toCharArray());
+            ks.load(is, myApp.getString(R.string.bks_keystore_password).toCharArray());
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
             throw new IllegalStateException("Cannot create the keystore");
         } finally {
@@ -168,20 +165,20 @@ public class DefaultAppDaggerComponent {
     }
 
 
-    public static ExchangeDaggerModule createExchangeDaggerModule(App app) {
-        return new ExchangeDaggerModule(app.getString(R.string.build_conf_base_url));
+    public static ExchangeDaggerModule createExchangeDaggerModule(MyApp myApp) {
+        return new ExchangeDaggerModule(myApp.getString(R.string.build_conf_base_url));
     }
 
 
-    public static AppDaggerModule createAppDaggerModule(App app) {
-        return new AppDaggerModule(app);
+    public static AppDaggerModule createAppDaggerModule(MyApp myApp) {
+        return new AppDaggerModule(myApp);
     }
 
 
-    public static AppInfoDaggerModule createAppInfoDaggerModule(App app) {
+    public static AppInfoDaggerModule createAppInfoDaggerModule(MyApp myApp) {
         PackageInfo pInfo;
         try {
-            pInfo = app.getPackageManager().getPackageInfo(app.getPackageName(), 0);
+            pInfo = myApp.getPackageManager().getPackageInfo(myApp.getPackageName(), 0);
             if (pInfo == null) {
                 throw new NullPointerException("pInfo is null");
             }

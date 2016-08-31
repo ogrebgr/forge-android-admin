@@ -14,7 +14,7 @@ import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.data.User;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
-import com.bolyartech.forge.admin.units.user.user_manage.Act_UserManage;
+import com.bolyartech.forge.admin.units.user.user_manage.ActUserManage;
 import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
 import com.bolyartech.forge.android.app_unit.OperationResidentComponent.OpState;
 import com.bolyartech.forge.android.misc.ViewUtils;
@@ -26,7 +26,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class Act_Users extends SessionActivity<Res_Users> implements OperationResidentComponent.Listener,
+public class ActUsers extends SessionActivity<ResUsers> implements OperationResidentComponent.Listener,
         Df_CommWait.Listener {
 
 
@@ -65,8 +65,8 @@ public class Act_Users extends SessionActivity<Res_Users> implements OperationRe
         handleState(getRes().getOpState());
 
         mLvUsers.setOnItemClickListener((parent, view, position, id) -> {
-            Intent intent = new Intent(Act_Users.this, Act_UserManage.class);
-            intent.putExtra(Act_UserManage.PARAM_USER, (User) parent.getItemAtPosition(position));
+            Intent intent = new Intent(ActUsers.this, ActUserManage.class);
+            intent.putExtra(ActUserManage.PARAM_USER, (User) parent.getItemAtPosition(position));
             startActivity(intent);
         });
     }
@@ -135,15 +135,15 @@ public class Act_Users extends SessionActivity<Res_Users> implements OperationRe
 
     @NonNull
     @Override
-    public Res_Users createResidentComponent() {
+    public ResUsers createResidentComponent() {
         return mRes_UserListImplProvider.get();
     }
 
 
     public static void showNoUserFoundDialog(FragmentManager fm) {
-        if (fm.findFragmentByTag(Df_NoUserFound.DIALOG_TAG) == null) {
-            Df_NoUserFound fra = new Df_NoUserFound();
-            fra.show(fm, Df_NoUserFound.DIALOG_TAG);
+        if (fm.findFragmentByTag(DfNoUserFound.DIALOG_TAG) == null) {
+            DfNoUserFound fra = new DfNoUserFound();
+            fra.show(fm, DfNoUserFound.DIALOG_TAG);
             fm.executePendingTransactions();
         }
     }

@@ -19,7 +19,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 
-public class Res_AdminUsersListImpl extends AbstractOperationResidentComponent implements Res_AdminUsersList {
+public class ResAdminUsersListImpl extends AbstractOperationResidentComponent implements ResAdminUsersList {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private volatile long mLoadXId;
@@ -31,7 +31,7 @@ public class Res_AdminUsersListImpl extends AbstractOperationResidentComponent i
 
 
     @Inject
-    public Res_AdminUsersListImpl(ForgeExchangeHelper forgeExchangeHelper) {
+    public ResAdminUsersListImpl(ForgeExchangeHelper forgeExchangeHelper) {
 
         mGson = new Gson();
 

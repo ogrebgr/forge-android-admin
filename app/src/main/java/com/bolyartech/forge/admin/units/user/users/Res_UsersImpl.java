@@ -2,7 +2,6 @@ package com.bolyartech.forge.admin.units.user.users;
 
 import com.bolyartech.forge.admin.data.User;
 import com.bolyartech.forge.android.app_unit.AbstractOperationResidentComponent;
-import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.forge.BasicResponseCodes;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelper;
@@ -20,7 +19,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 
-public class Res_UsersImpl extends AbstractOperationResidentComponent implements Res_Users {
+public class Res_UsersImpl extends AbstractOperationResidentComponent implements ResUsers {
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 

@@ -7,7 +7,7 @@ import com.bolyartech.forge.base.exchange.forge.ForgeExchangeManagerListener;
 import java.util.List;
 
 
-public interface Res_AdminUsersList extends OperationResidentComponent, ForgeExchangeManagerListener {
+public interface ResAdminUsersList extends OperationResidentComponent, ForgeExchangeManagerListener {
     void loadAdminUsers();
 
     List<AdminUser> getData();
