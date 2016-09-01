@@ -32,7 +32,7 @@ public class UsersAdapter extends ArrayAdapter<User> {
 
         if (rowView == null) {
             LayoutInflater inflater = mActivity.getLayoutInflater();
-            rowView = inflater.inflate(R.layout.lvr_users, parent, false);
+            rowView = inflater.inflate(R.layout.lvr__users, parent, false);
 
             ViewHolder viewHolder = new ViewHolder();
             viewHolder.username = ViewUtils.findTextViewX(rowView, R.id.tv_username);

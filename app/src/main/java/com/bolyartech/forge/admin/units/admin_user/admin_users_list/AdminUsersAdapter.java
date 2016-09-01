@@ -32,7 +32,7 @@ public class AdminUsersAdapter extends ArrayAdapter<AdminUser> {
 
         if (rowView == null) {
             LayoutInflater inflater = mActivity.getLayoutInflater();
-            rowView = inflater.inflate(R.layout.lvr_admin_users, parent, false);
+            rowView = inflater.inflate(R.layout.lvr__admin_users, parent, false);
 
             ViewHolder viewHolder = new ViewHolder();
             viewHolder.username = ViewUtils.findTextViewX(rowView, R.id.tv_username);
