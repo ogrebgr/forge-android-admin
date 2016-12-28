@@ -1,8 +1,8 @@
 package com.bolyartech.forge.admin.dagger;
 
 
-import com.bolyartech.forge.admin.app.MyAppConfiguration;
-import com.bolyartech.forge.admin.app.MyAppConfigurationImpl;
+import com.bolyartech.forge.admin.app.AppConfiguration;
+import com.bolyartech.forge.admin.app.AppConfigurationImpl;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -32,7 +32,7 @@ public class AppInfoDaggerModule {
 
     @Provides
     @Singleton
-    MyAppConfiguration provideAppConfiguration(MyAppConfigurationImpl impl) {
+    AppConfiguration provideAppConfiguration(AppConfigurationImpl impl) {
         return impl;
     }
 }

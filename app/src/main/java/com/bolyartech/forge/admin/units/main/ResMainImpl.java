@@ -1,76 +1,50 @@
 package com.bolyartech.forge.admin.units.main;
 
-import com.bolyartech.forge.admin.app.MyAppConfiguration;
-import com.bolyartech.forge.admin.app.AuthorizationResponseCodes;
-import com.bolyartech.forge.admin.app.CurrentUser;
+import com.bolyartech.forge.admin.app.AppConfiguration;
 import com.bolyartech.forge.admin.app.CurrentUserHolder;
-import com.bolyartech.forge.android.app_unit.AbstractOperationResidentComponent;
-import com.bolyartech.forge.android.misc.NetworkInfoProvider;
+import com.bolyartech.forge.admin.misc.LoginHelper;
+import com.bolyartech.forge.android.app_unit.AbstractMultiOperationResidentComponent;
+import com.bolyartech.forge.base.exchange.ForgeExchangeManager;
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
-import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
-import com.bolyartech.forge.base.exchange.forge.BasicResponseCodes;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelper;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeManagerListener;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 import com.bolyartech.forge.base.session.Session;
-import com.bolyartech.forge.base.task.ForgeExchangeManager;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 
-public class ResMainImpl extends AbstractOperationResidentComponent implements ResMain {
+public class ResMainImpl extends AbstractMultiOperationResidentComponent<ResMain.Operation> implements ResMain,
+        ForgeExchangeManagerListener, LoginHelper.Listener  {
+
+
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
-    private final MyAppConfiguration mMyAppConfiguration;
-    private final NetworkInfoProvider mNetworkInfoProvider;
-
-    private volatile long mLoginXId;
-    private volatile boolean mAbortLogin = false;
+    private final AppConfiguration mAppConfiguration;
 
     private final ForgeExchangeHelper mForgeExchangeHelper;
     private final Session mSession;
-    private final CurrentUserHolder mCurrentUserHolder;
+    private final Provider<LoginHelper> mLoginHelperProvider;
 
-    private LoginError mLoginError;
+    private LoginHelper mLoginHelper;
 
+    private int mLoginError;
 
 
     @Inject
     public ResMainImpl(
                         ForgeExchangeHelper forgeExchangeHelper,
                         Session session,
-                        NetworkInfoProvider networkInfoProvider,
-                        MyAppConfiguration myAppConfiguration,
-                        CurrentUserHolder currentUserHolder) {
+                        AppConfiguration appConfiguration,
+                        Provider<LoginHelper> loginHelperProvider) {
 
-        mMyAppConfiguration = myAppConfiguration;
-        mNetworkInfoProvider = networkInfoProvider;
+        mAppConfiguration = appConfiguration;
         mForgeExchangeHelper = forgeExchangeHelper;
         mSession = session;
-        mCurrentUserHolder = currentUserHolder;
-    }
-
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-
-        if (mNetworkInfoProvider.isConnected()) {
-            init();
-        }
-    }
-
-
-    private void init() {
-        if (mNetworkInfoProvider.isConnected()) {
-            if (mMyAppConfiguration.getLoginPrefs().hasLoginCredentials()) {
-                loginActual();
-            }
-        }
+        mLoginHelperProvider = loginHelperProvider;
     }
 
 
@@ -83,119 +57,134 @@ public class ResMainImpl extends AbstractOperationResidentComponent implements R
 
     @Override
     public void abortLogin() {
-        mAbortLogin = true;
-        switchToIdleState();
+        if (mLoginHelper != null) {
+            mLoginHelper.abortLogin();
+        }
+        abort();
     }
 
 
     @Override
     public void logout() {
-        mSession.logout();
-        Thread t = new Thread(() -> {
+        if (isIdle()) {
+            switchToBusyState(Operation.LOGOUT);
+            mSession.logout();
             ForgeGetHttpExchangeBuilder b = mForgeExchangeHelper.createForgeGetHttpExchangeBuilder("logout");
             ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
             em.executeExchange(b.build(), em.generateTaskId());
-        });
-        t.start();
-        switchToIdleState();
+
+            switchToEndedStateSuccess();
+        } else {
+            mLogger.warn("Not in IDLE state");
+        }
     }
 
 
     @Override
-    public void internetAvailable() {
-
+    public void onLoginOk() {
+        switchToEndedStateSuccess();
     }
 
 
     @Override
-    public void onConnectivityChange() {
-
+    public void onLoginFail(int code) {
+        mLoginError = code;
+        switchToEndedStateFail();
     }
 
 
     private void loginActual() {
         if (isIdle()) {
-            mAbortLogin = false;
-            switchToBusyState();
+            switchToBusyState(Operation.LOGIN);
+            mLoginHelper = mLoginHelperProvider.get();
+            mLoginHelper.initiate(mForgeExchangeHelper.createForgePostHttpExchangeBuilder("login"),
+                    mForgeExchangeHelper.createForgePostHttpExchangeBuilder("login"),
+                    mAppConfiguration.getLoginPrefs().getUsername(),
+                    mAppConfiguration.getLoginPrefs().getPassword(),
+                    this,
+                    true);
 
-            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("login");
-            b.addPostParameter("username", mMyAppConfiguration.getLoginPrefs().getUsername());
-            b.addPostParameter("password", mMyAppConfiguration.getLoginPrefs().getPassword());
-            b.addPostParameter("app_type", "1");
-            b.addPostParameter("app_version", mMyAppConfiguration.getAppVersion());
-            b.addPostParameter("session_info", "1");
-
-            ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
-            mLoginXId = em.generateTaskId();
-            em.executeExchange(b.build(), mLoginXId);
+//            mAbortLogin = false;
+//            switchToBusyState(Operation.LOGIN);
+//
+//            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("login");
+//            b.addPostParameter("username", mAppConfiguration.getLoginPrefs().getUsername());
+//            b.addPostParameter("password", mAppConfiguration.getLoginPrefs().getPassword());
+//            b.addPostParameter("app_type", "1");
+//            b.addPostParameter("app_version", mAppConfiguration.getAppVersion());
+//            b.addPostParameter("session_info", "1");
+//
+//            ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
+//            mLoginXId = em.generateTaskId();
+//            em.executeExchange(b.build(), mLoginXId);
         } else {
-            throw new IllegalStateException("Not in IDLE state");
+            mLogger.warn("Not in IDLE state");
         }
     }
 
 
     @Override
     public void onExchangeOutcome(long exchangeId, boolean isSuccess, ForgeExchangeResult result) {
-        if (exchangeId == mLoginXId) {
-            handleLoginOutcome(isSuccess, result);
+        if (mLoginHelper != null) {
+            mLoginHelper.handleExchange(exchangeId, isSuccess, result);
         }
     }
 
 
-    private void handleLoginOutcome(boolean isSuccess, ForgeExchangeResult result) {
-        if (!mAbortLogin) {
-            if (isSuccess) {
-                int code = result.getCode();
-
-                if (code > 0) {
-                    if (code == BasicResponseCodes.Oks.OK.getCode()) {
-                        try {
-                            JSONObject jobj = new JSONObject(result.getPayload());
-                            JSONObject sessionInfo = jobj.optJSONObject("session_info");
-                            if (sessionInfo != null) {
-                                mCurrentUserHolder.setCurrentUser(new CurrentUser(sessionInfo.getLong("user_id"),
-                                        sessionInfo.getBoolean("super_admin")));
-
-                                int sessionTtl = jobj.getInt("session_ttl");
-                                mSession.startSession(sessionTtl);
-                                mLogger.debug("App login OK");
-
-                                switchToCompletedStateSuccess();
-                            } else {
-                                mLoginError = LoginError.FAILED;
-                                switchToCompletedStateFail();
-                                mLogger.error("Missing session info");
-                            }
-                        } catch (JSONException e) {
-                            mLoginError = LoginError.FAILED;
-                            switchToCompletedStateFail();
-                            mLogger.warn("Login exchange failed because cannot parse JSON");
-                        }
-                    } else {
-                        // unexpected positive code
-                        mLoginError = LoginError.FAILED;
-                        switchToCompletedStateFail();
-                    }
-                } else if (code == BasicResponseCodes.Errors.UPGRADE_NEEDED.getCode()) {
-                    mLoginError = LoginError.UPGRADE_NEEDED;
-                    switchToCompletedStateFail();
-                } else if (code == AuthorizationResponseCodes.Errors.INVALID_LOGIN.getCode()) {
-                    mLoginError = LoginError.INVALID_LOGIN;
-                    switchToCompletedStateFail();
-                } else {
-                    mLoginError = LoginError.FAILED;
-                    switchToCompletedStateFail();
-                }
-            } else {
-                mLoginError = LoginError.FAILED;
-                switchToCompletedStateFail();
-            }
-        }
-    }
+//    private void handleLoginOutcome(boolean isSuccess, ForgeExchangeResult result) {
+//        if (!mAbortLogin) {
+//            if (isSuccess) {
+//                int code = result.getCode();
+//
+//                if (code > 0) {
+//                    if (code == BasicResponseCodes.OK) {
+//                        try {
+//                            JSONObject jobj = new JSONObject(result.getPayload());
+//                            JSONObject sessionInfo = jobj.optJSONObject("session_info");
+//                            if (sessionInfo != null) {
+//                                mCurrentUserHolder.setCurrentUser(new CurrentUser(sessionInfo.getLong("user_id"),
+//                                        sessionInfo.getBoolean("super_admin")));
+//
+//                                int sessionTtl = jobj.getInt("session_ttl");
+//                                mSession.startSession(sessionTtl);
+//                                mLogger.debug("App login OK");
+//
+//                                switchToEndedStateSuccess();
+//                            } else {
+//                                mLoginError = LoginError.FAILED;
+//                                switchToEndedStateFail();
+//                                mLogger.error("Missing session info");
+//                            }
+//                        } catch (JSONException e) {
+//                            mLoginError = LoginError.FAILED;
+//                            switchToEndedStateFail();
+//                            mLogger.warn("Login exchange failed because cannot parse JSON");
+//                        }
+//                    } else {
+//                        // unexpected positive code
+//                        mLoginError = LoginError.FAILED;
+//                        switchToEndedStateFail();
+//                    }
+//                } else if (code == BasicResponseCodes.Errors.UPGRADE_NEEDED) {
+//                    mLoginError = LoginError.UPGRADE_NEEDED;
+//                    switchToEndedStateFail();
+//                } else if (code == AuthenticationResponseCodes.Errors.INVALID_LOGIN) {
+//                    mLoginError = LoginError.INVALID_LOGIN;
+//                    switchToEndedStateFail();
+//                } else {
+//                    mLoginError = LoginError.FAILED;
+//                    switchToEndedStateFail();
+//                }
+//            } else {
+//                mLoginError = LoginError.FAILED;
+//                switchToEndedStateFail();
+//            }
+//        }
+//    }
 
 
     @Override
-    public LoginError getLoginError() {
+    public int getLoginError() {
         return mLoginError;
     }
 }

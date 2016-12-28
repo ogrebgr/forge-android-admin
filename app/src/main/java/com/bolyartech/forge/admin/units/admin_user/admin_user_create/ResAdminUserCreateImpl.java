@@ -1,18 +1,21 @@
 package com.bolyartech.forge.admin.units.admin_user.admin_user_create;
 
 import com.bolyartech.forge.android.app_unit.AbstractSideEffectOperationResidentComponent;
+import com.bolyartech.forge.base.exchange.ForgeExchangeManager;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.forge.BasicResponseCodes;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
-import com.bolyartech.forge.base.task.ForgeExchangeManager;
-
+//
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
 
-public class ResAdminUserCreateImpl extends AbstractSideEffectOperationResidentComponent<Void, Integer> implements ResAdminUserCreate {
+public class ResAdminUserCreateImpl extends AbstractSideEffectOperationResidentComponent<Void, Integer>
+        implements ResAdminUserCreate {
+
+
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private volatile Long mCreateXId;
@@ -33,7 +36,7 @@ public class ResAdminUserCreateImpl extends AbstractSideEffectOperationResidentC
                      boolean superAdmin) {
 
         if (isIdle()) {
-            switchToCompletedStateFail();
+            switchToBusyState();
             ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("create_admin_user");
             b.addPostParameter("username", username);
             b.addPostParameter("name", name);
@@ -62,16 +65,16 @@ public class ResAdminUserCreateImpl extends AbstractSideEffectOperationResidentC
             int code = result.getCode();
 
             if (code > 0) {
-                if (code == BasicResponseCodes.Oks.OK.getCode()) {
-                    switchToCompletedStateSuccess();
+                if (code == BasicResponseCodes.OK) {
+                    switchToEndedStateSuccess(null);
                 } else {
-                    switchToCompletedStateFail();
+                    switchToEndedStateFail(null);
                 }
             } else {
-                switchToCompletedStateFail(code);
+                switchToEndedStateFail(code);
             }
         } else {
-            switchToCompletedStateFail();
+            switchToEndedStateFail(null);
         }
     }
 

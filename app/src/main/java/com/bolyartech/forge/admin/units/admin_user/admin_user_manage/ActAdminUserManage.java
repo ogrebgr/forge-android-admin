@@ -14,7 +14,6 @@ import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
-import com.bolyartech.forge.admin.misc.DoesLogin;
 import com.bolyartech.forge.admin.units.admin_user.admin_user_chpwd.ActAdminUserChpwd;
 import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
 import com.bolyartech.forge.android.app_unit.OperationResidentComponent.OpState;
@@ -28,7 +27,7 @@ import javax.inject.Provider;
 
 
 public class ActAdminUserManage extends SessionActivity<ResAdminUserManage> implements
-        OperationResidentComponent.Listener, DoesLogin, Df_CommWait.Listener {
+        OperationResidentComponent.Listener, Df_CommWait.Listener {
 
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
@@ -95,11 +94,12 @@ public class ActAdminUserManage extends SessionActivity<ResAdminUserManage> impl
     public void onResume() {
         super.onResume();
 
-        handleState(getRes().getOpState());
+        handleState();
     }
 
 
-    private void handleState(OpState state) {
+    private void handleState() {
+        OpState state = getRes().getOpState();
         mLogger.debug("State: {}", state);
 
         switch(state) {
@@ -109,7 +109,7 @@ public class ActAdminUserManage extends SessionActivity<ResAdminUserManage> impl
             case BUSY:
                 MyAppDialogs.showCommWaitDialog(getFragmentManager());
                 break;
-            case COMPLETED:
+            case ENDED:
                 handleCompleted();
                 break;
         }
@@ -194,6 +194,6 @@ public class ActAdminUserManage extends SessionActivity<ResAdminUserManage> impl
 
     @Override
     public void onResidentOperationStateChanged() {
-        handleState(getRes().getOpState());
+        handleState();
     }
 }

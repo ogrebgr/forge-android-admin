@@ -1,13 +1,12 @@
 package com.bolyartech.forge.admin.dagger;
 
 import com.bolyartech.forge.android.task.ForgeAndroidTaskExecutor;
+import com.bolyartech.forge.base.exchange.ForgeExchangeManager;
 import com.bolyartech.forge.base.exchange.ResultProducer;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelperImpl;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.forge.ForgeHeaderResultProducer;
-import com.bolyartech.forge.base.task.ForgeExchangeManager;
-import com.bolyartech.forge.base.task.TaskExecutor;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

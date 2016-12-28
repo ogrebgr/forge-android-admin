@@ -1,12 +1,12 @@
 package com.bolyartech.forge.admin.units.user.user_manage;
 
 import com.bolyartech.forge.admin.data.User;
-import com.bolyartech.forge.android.app_unit.AbstractOperationResidentComponent;
+import com.bolyartech.forge.android.app_unit.OperationResidentComponentImpl;
+import com.bolyartech.forge.base.exchange.ForgeExchangeManager;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.forge.BasicResponseCodes;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
-import com.bolyartech.forge.base.task.ForgeExchangeManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 
-public class ResUserManageImpl extends AbstractOperationResidentComponent implements ResUserManage {
+public class ResUserManageImpl extends OperationResidentComponentImpl implements ResUserManage {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private volatile long mDisableXId;
@@ -82,22 +82,22 @@ public class ResUserManageImpl extends AbstractOperationResidentComponent implem
             int code = result.getCode();
 
             if (code > 0) {
-                if (code == BasicResponseCodes.Oks.OK.getCode()) {
+                if (code == BasicResponseCodes.OK) {
                     try {
                         JSONObject jobj = new JSONObject(result.getPayload());
                         mDisableResult = jobj.getBoolean("disabled");
-                        switchToCompletedStateSuccess();
+                        switchToEndedStateSuccess();
                     } catch (JSONException e) {
-                        switchToCompletedStateFail();
+                        switchToEndedStateFail();
                     }
                 } else {
-                    switchToCompletedStateFail();
+                    switchToEndedStateFail();
                 }
             } else {
-                switchToCompletedStateFail();
+                switchToEndedStateFail();
             }
         } else {
-            switchToCompletedStateFail();
+            switchToEndedStateFail();
         }
     }
 }

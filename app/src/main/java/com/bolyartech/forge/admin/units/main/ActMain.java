@@ -11,17 +11,18 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bolyartech.forge.admin.R;
+import com.bolyartech.forge.admin.app.AuthenticationResponseCodes;
 import com.bolyartech.forge.admin.app.LoginPrefs;
-import com.bolyartech.forge.admin.app.SessionActivity;
+import com.bolyartech.forge.admin.app.OpSessionActivity;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
-import com.bolyartech.forge.admin.misc.DoesLogin;
 import com.bolyartech.forge.admin.misc.PerformsLogin;
 import com.bolyartech.forge.admin.units.admin_user.admin_users_list.ActAdminUsersList;
 import com.bolyartech.forge.admin.units.login.ActLogin;
 import com.bolyartech.forge.admin.units.user.users.ActUsers;
 import com.bolyartech.forge.android.misc.NetworkInfoProvider;
 import com.bolyartech.forge.android.misc.ViewUtils;
+import com.bolyartech.forge.base.exchange.forge.BasicResponseCodes;
 
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +32,8 @@ import javax.inject.Provider;
 import static com.bolyartech.forge.android.app_unit.OperationResidentComponent.*;
 
 
-public class ActMain extends SessionActivity<ResMain> implements Listener,
-        DoesLogin, Df_CommWait.Listener, PerformsLogin {
+public class ActMain extends OpSessionActivity<ResMain> implements Listener,
+        PerformsLogin, Df_CommWait.Listener {
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
@@ -77,7 +78,7 @@ public class ActMain extends SessionActivity<ResMain> implements Listener,
 
         ViewUtils.initButton(view, R.id.btn_login, v -> {
             if (mLoginPrefs.hasLoginCredentials()) {
-                getResident().login();
+                getRes().login();
             } else {
                 Intent intent = new Intent(ActMain.this, ActLogin.class);
                 startActivity(intent);
@@ -117,7 +118,7 @@ public class ActMain extends SessionActivity<ResMain> implements Listener,
         int id = item.getItemId();
 
         if (id == R.id.ab_logout) {
-            getResident().logout();
+            getRes().logout();
         } else if (id == R.id.ab_login_as) {
             Intent intent = new Intent(ActMain.this, ActLogin.class);
             startActivity(intent);
@@ -130,7 +131,7 @@ public class ActMain extends SessionActivity<ResMain> implements Listener,
 
     @Override
     public void onCommWaitDialogCancelled() {
-        getResident().abortLogin();
+        getRes().abortLogin();
     }
 
 
@@ -145,14 +146,15 @@ public class ActMain extends SessionActivity<ResMain> implements Listener,
     public void onResume() {
         super.onResume();
 
-        handleState(getResident().getOpState());
+        handleState();
     }
 
 
-    private synchronized void handleState(OpState state) {
-        mLogger.debug("State: {}", state);
+    @Override
+    public synchronized void handleState() {
+        mLogger.debug("State: {}", getRes().getOpState());
         invalidateOptionsMenu();
-        switch (state) {
+        switch (getRes().getOpState()) {
             case IDLE:
                 if (mNetworkInfoProvider.isConnected()) {
                     if (getSession().isLoggedIn()) {
@@ -168,14 +170,12 @@ public class ActMain extends SessionActivity<ResMain> implements Listener,
             case BUSY:
                 MyAppDialogs.showLoggingInDialog(getFragmentManager());
                 break;
-            case COMPLETED:
+            case ENDED:
                 MyAppDialogs.hideLoggingInDialog(getFragmentManager());
                 handleCompleted();
                 getRes().ack();
                 break;
         }
-
-
     }
 
 
@@ -184,15 +184,16 @@ public class ActMain extends SessionActivity<ResMain> implements Listener,
             screenModeLoggedIn();
         } else {
             switch (getRes().getLoginError()) {
-                case INVALID_LOGIN:
+                case AuthenticationResponseCodes.Errors.INVALID_LOGIN:
+                    screenModeNotLoggedIn();
                     MyAppDialogs.showInvalidAutologinDialog(getFragmentManager());
                     break;
-                case FAILED:
+                case BasicResponseCodes.Errors.UPGRADE_NEEDED:
+                    MyAppDialogs.showUpgradeNeededDialog(getFragmentManager());
+                    break;
+                default:
                     MyAppDialogs.showCommProblemDialog(getFragmentManager());
                     screenModeNotLoggedIn();
-                    break;
-                case UPGRADE_NEEDED:
-                    MyAppDialogs.showUpgradeNeededDialog(getFragmentManager());
                     break;
             }
         }
@@ -223,11 +224,5 @@ public class ActMain extends SessionActivity<ResMain> implements Listener,
 //        mBtnLogin.setVisibility(View.GONE);
 
         mTvLoggedInAs.setText(Html.fromHtml(String.format(getString(R.string.act__main__tv_logged_in), mLoginPrefs.getUsername())));
-    }
-
-
-    @Override
-    public void onResidentOperationStateChanged() {
-        handleState(getRes().getOpState());
     }
 }

@@ -2,7 +2,7 @@ package com.bolyartech.forge.admin.dagger;
 
 import android.content.Context;
 
-import com.bolyartech.forge.admin.app.MyApp;
+import com.bolyartech.forge.admin.app.AdminApp;
 import com.bolyartech.forge.admin.app.CurrentUserHolder;
 import com.bolyartech.forge.admin.app.LoginPrefs;
 import com.bolyartech.forge.admin.app.LoginPrefsImpl;
@@ -20,17 +20,17 @@ import dagger.Provides;
  */
 @Module
 public class AppDaggerModule {
-    private final MyApp mMyMyApp;
+    private final AdminApp mMyAdminApp;
 
 
-    public AppDaggerModule(MyApp myMyApp) {
-        mMyMyApp = myMyApp;
+    public AppDaggerModule(AdminApp myAdminApp) {
+        mMyAdminApp = myAdminApp;
     }
 
     @Provides
     @ForApplication
     Context providesApplicationContext() {
-        return mMyMyApp;
+        return mMyAdminApp;
     }
 
 

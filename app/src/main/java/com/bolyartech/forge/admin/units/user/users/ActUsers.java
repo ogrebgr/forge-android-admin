@@ -62,7 +62,7 @@ public class ActUsers extends SessionActivity<ResUsers> implements OperationResi
     public void onResume() {
         super.onResume();
 
-        handleState(getRes().getOpState());
+        handleState();
 
         mLvUsers.setOnItemClickListener((parent, view, position, id) -> {
             Intent intent = new Intent(ActUsers.this, ActUserManage.class);
@@ -72,7 +72,8 @@ public class ActUsers extends SessionActivity<ResUsers> implements OperationResi
     }
 
 
-    private void handleState(OpState state) {
+    private void handleState() {
+        OpState state = getRes().getOpState();
         switch (state) {
             case IDLE:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
@@ -80,7 +81,7 @@ public class ActUsers extends SessionActivity<ResUsers> implements OperationResi
             case BUSY:
                 MyAppDialogs.showCommWaitDialog(getFragmentManager());
                 break;
-            case COMPLETED:
+            case ENDED:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                 if (getRes().isSuccess()) {
                     showData();
@@ -151,6 +152,6 @@ public class ActUsers extends SessionActivity<ResUsers> implements OperationResi
 
     @Override
     public void onResidentOperationStateChanged() {
-        handleState(getRes().getOpState());
+        handleState();
     }
 }

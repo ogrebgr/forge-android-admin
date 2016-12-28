@@ -62,7 +62,7 @@ public class ActAdminUserCreate extends SessionActivity<ResAdminUserCreate> impl
     public void onResume() {
         super.onResume();
 
-        handleState(getRes().getOpState());
+        handleState();
     }
 
 
@@ -88,7 +88,8 @@ public class ActAdminUserCreate extends SessionActivity<ResAdminUserCreate> impl
     }
 
 
-    private void handleState(OperationResidentComponent.OpState state) {
+    private void handleState() {
+        OperationResidentComponent.OpState state = getRes().getOpState();
         switch(state) {
             case IDLE:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
@@ -96,7 +97,7 @@ public class ActAdminUserCreate extends SessionActivity<ResAdminUserCreate> impl
             case BUSY:
                 MyAppDialogs.showCommWaitDialog(getFragmentManager());
                 break;
-            case COMPLETED:
+            case ENDED:
                 if (getRes().isSuccess()) {
                     MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                     setResult(Activity.RESULT_OK);
@@ -209,6 +210,6 @@ public class ActAdminUserCreate extends SessionActivity<ResAdminUserCreate> impl
 
     @Override
     public void onResidentOperationStateChanged() {
-        handleState(getRes().getOpState());
+        handleState();
     }
 }

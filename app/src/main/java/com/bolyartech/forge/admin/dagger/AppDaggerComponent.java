@@ -1,7 +1,7 @@
 package com.bolyartech.forge.admin.dagger;
 
 
-import com.bolyartech.forge.admin.app.MyApp;
+import com.bolyartech.forge.admin.app.AdminApp;
 import com.bolyartech.forge.admin.units.admin_user.admin_user_chpwd.ActAdminUserChpwd;
 import com.bolyartech.forge.admin.units.admin_user.admin_user_create.ActAdminUserCreate;
 import com.bolyartech.forge.admin.units.admin_user.admin_user_manage.ActAdminUserManage;
@@ -27,10 +27,11 @@ import dagger.Component;
         UnitManagerDaggerModule.class,
         NetworkInfoProviderDaggerModule.class,
         ExchangeDaggerModule.class,
+        LoginModule.class
 })
 @Singleton
 public interface AppDaggerComponent {
-    void inject(MyApp myApp);
+    void inject(AdminApp adminApp);
     void inject(ActMain act);
     void inject(ActLogin act);
     void inject(ActAdminUsersList act);

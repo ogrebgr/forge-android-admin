@@ -16,10 +16,10 @@
 package com.bolyartech.forge.admin.app;
 
 import com.bolyartech.forge.android.app_unit.UnitManagerImpl;
+import com.bolyartech.forge.base.exchange.ExchangeManager;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeManagerListener;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 import com.bolyartech.forge.base.session.Session;
-import com.bolyartech.forge.base.task.ExchangeManager;
 
 import org.slf4j.LoggerFactory;
 
@@ -28,13 +28,13 @@ import javax.inject.Singleton;
 
 
 @Singleton
-public class MyAppUnitManager extends UnitManagerImpl implements ExchangeManager.Listener<ForgeExchangeResult> {
+public class AppUnitManager extends UnitManagerImpl implements ExchangeManager.Listener<ForgeExchangeResult> {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final Session mSession;
 
     @Inject
-    public MyAppUnitManager(Session session) {
+    public AppUnitManager(Session session) {
         mSession = session;
     }
 

@@ -72,11 +72,13 @@ public class ActUserChpwd extends SessionActivity<ResUserChpwd> implements Opera
     @Override
     public void onResume() {
         super.onResume();
-        handleState(getRes().getOpState());
+        handleState();
     }
 
 
-    private void handleState(OpState state) {
+    private void handleState() {
+        OpState state = getRes().getOpState();
+
         switch (state) {
             case IDLE:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());
@@ -84,7 +86,7 @@ public class ActUserChpwd extends SessionActivity<ResUserChpwd> implements Opera
             case BUSY:
                 MyAppDialogs.showCommWaitDialog(getFragmentManager());
                 break;
-            case COMPLETED:
+            case ENDED:
                 if (getRes().isSuccess()) {
                     MyAppDialogs.hideCommWaitDialog(getFragmentManager());
                     setResult(Activity.RESULT_OK);
@@ -185,6 +187,6 @@ public class ActUserChpwd extends SessionActivity<ResUserChpwd> implements Opera
 
     @Override
     public void onResidentOperationStateChanged() {
-        handleState(getRes().getOpState());
+        handleState();
     }
 }

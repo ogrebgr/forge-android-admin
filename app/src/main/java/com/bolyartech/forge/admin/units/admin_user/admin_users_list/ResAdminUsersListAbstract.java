@@ -1,12 +1,12 @@
 package com.bolyartech.forge.admin.units.admin_user.admin_users_list;
 
 import com.bolyartech.forge.admin.data.AdminUser;
-import com.bolyartech.forge.android.app_unit.AbstractOperationResidentComponent;
+import com.bolyartech.forge.android.app_unit.OperationResidentComponentImpl;
+import com.bolyartech.forge.base.exchange.ForgeExchangeManager;
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.forge.BasicResponseCodes;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
-import com.bolyartech.forge.base.task.ForgeExchangeManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -19,7 +19,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 
-public class ResAdminUsersListImpl extends AbstractOperationResidentComponent implements ResAdminUsersList {
+public class ResAdminUsersListAbstract extends OperationResidentComponentImpl implements ResAdminUsersList {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private volatile long mLoadXId;
@@ -31,16 +31,12 @@ public class ResAdminUsersListImpl extends AbstractOperationResidentComponent im
 
 
     @Inject
-    public ResAdminUsersListImpl(ForgeExchangeHelper forgeExchangeHelper) {
+    public ResAdminUsersListAbstract(ForgeExchangeHelper forgeExchangeHelper) {
 
         mGson = new Gson();
 
         mForgeExchangeHelper = forgeExchangeHelper;
-    }
 
-
-    @Override
-    public void onCreate() {
         loadAdminUsers();
     }
 
@@ -79,18 +75,18 @@ public class ResAdminUsersListImpl extends AbstractOperationResidentComponent im
             int code = result.getCode();
 
             if (code > 0) {
-                if (code == BasicResponseCodes.Oks.OK.getCode()) {
+                if (code == BasicResponseCodes.OK) {
                     Type listType = new TypeToken<ArrayList<AdminUser>>(){}.getType();
                     mData = mGson.fromJson(result.getPayload(), listType);
-                    switchToCompletedStateSuccess();
+                    switchToEndedStateSuccess();
                 } else {
-                    switchToCompletedStateFail();
+                    switchToEndedStateFail();
                 }
             } else {
-                switchToCompletedStateFail();
+                switchToEndedStateFail();
             }
         } else {
-            switchToCompletedStateFail();
+            switchToEndedStateFail();
         }
     }
 }

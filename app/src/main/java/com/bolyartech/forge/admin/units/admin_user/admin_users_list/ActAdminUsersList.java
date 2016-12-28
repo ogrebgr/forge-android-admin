@@ -17,9 +17,9 @@ import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.units.admin_user.admin_user_create.ActAdminUserCreate;
 import com.bolyartech.forge.admin.units.admin_user.admin_user_manage.ActAdminUserManage;
-import com.bolyartech.forge.android.app_unit.ActivityResult;
 import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
 import com.bolyartech.forge.android.app_unit.OperationResidentComponent.OpState;
+import com.bolyartech.forge.android.misc.ActivityResult;
 import com.bolyartech.forge.android.misc.ViewUtils;
 
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class ActAdminUsersList extends SessionActivity<ResAdminUsersList> implem
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     @Inject
-    Provider<ResAdminUsersListImpl> mRes_AdminUsersListImplProvider;
+    Provider<ResAdminUsersListAbstract> mRes_AdminUsersListImplProvider;
 
     private ListView mLvAdminUsers;
     private AdminUsersAdapter mAdminUsersAdapter;
@@ -93,7 +93,7 @@ public class ActAdminUsersList extends SessionActivity<ResAdminUsersList> implem
         super.onResume();
 
         if (mActivityResult == null) {
-            handleState(getRes().getOpState());
+            handleState();
         } else {
             handleActivityResult(mActivityResult);
             mActivityResult = null;
@@ -101,7 +101,8 @@ public class ActAdminUsersList extends SessionActivity<ResAdminUsersList> implem
     }
 
 
-    private void handleState(OpState state) {
+    private void handleState() {
+        OpState state = getRes().getOpState();
         mLogger.debug("State: {}", state);
 
         switch (state) {
@@ -111,7 +112,7 @@ public class ActAdminUsersList extends SessionActivity<ResAdminUsersList> implem
             case BUSY:
                 MyAppDialogs.showGenericWaitDialog(getFragmentManager());
                 break;
-            case COMPLETED:
+            case ENDED:
                 MyAppDialogs.hideGenericWaitDialog(getFragmentManager());
                 if (getRes().isSuccess()) {
                     showData();
@@ -189,6 +190,6 @@ public class ActAdminUsersList extends SessionActivity<ResAdminUsersList> implem
 
     @Override
     public void onResidentOperationStateChanged() {
-        handleState(getRes().getOpState());
+        handleState();
     }
 }

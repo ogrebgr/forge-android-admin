@@ -1,6 +1,6 @@
 package com.bolyartech.forge.admin.app;
 
-public interface MyAppConfiguration {
+public interface AppConfiguration {
     String getAppVersion();
 
     LoginPrefs getLoginPrefs();
