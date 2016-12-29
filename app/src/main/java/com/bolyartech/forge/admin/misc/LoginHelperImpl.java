@@ -158,27 +158,31 @@ public class LoginHelperImpl implements LoginHelper {
 
     private void handleStep1(boolean isSuccess, ForgeExchangeResult result) {
         if (!mAbortLogin) {
-            int code = result.getCode();
-            if (isSuccess && code == BasicResponseCodes.OK) {
-                String serverFirst = result.getPayload();
-                try {
-                    String clientFinal = mScramClientFunctionality.prepareFinalMessage(mPassword,
-                            serverFirst);
+            if (isSuccess) {
+                int code = result.getCode();
+                if (code == BasicResponseCodes.OK) {
+                    String serverFirst = result.getPayload();
+                    try {
+                        String clientFinal = mScramClientFunctionality.prepareFinalMessage(mPassword,
+                                serverFirst);
 
-                    if (clientFinal != null) {
-                        mStep2builder.addPostParameter("step", "2");
-                        mStep2builder.addPostParameter("data", clientFinal);
+                        if (clientFinal != null) {
+                            mStep2builder.addPostParameter("step", "2");
+                            mStep2builder.addPostParameter("data", clientFinal);
 
-                        mStep2XId = mForgeExchangeManager.generateTaskId();
-                        mForgeExchangeManager.executeExchange(mStep2builder.build(), mStep2XId);
-                    } else {
-                        mListener.onLoginFail(AuthenticationResponseCodes.Errors.INVALID_LOGIN);
+                            mStep2XId = mForgeExchangeManager.generateTaskId();
+                            mForgeExchangeManager.executeExchange(mStep2builder.build(), mStep2XId);
+                        } else {
+                            mListener.onLoginFail(AuthenticationResponseCodes.Errors.INVALID_LOGIN);
+                        }
+                    } catch (ScramException e) {
+                        mListener.onLoginFail(code);
                     }
-                } catch (ScramException e) {
+                } else {
                     mListener.onLoginFail(code);
                 }
             } else {
-                mListener.onLoginFail(code);
+                mListener.onLoginFail(BasicResponseCodes.Errors.UNSPECIFIED_ERROR);
             }
         }
     }

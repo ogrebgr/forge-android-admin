@@ -41,14 +41,19 @@ public class AppUnitManager extends UnitManagerImpl implements ExchangeManager.L
 
     @Override
     public void onExchangeOutcome(long exchangeId, boolean isSuccess, ForgeExchangeResult forgeExchangeResult) {
-        mLogger.debug("Forge exchange returned with code {}", forgeExchangeResult.getCode());
+        if (forgeExchangeResult != null) {
+            mLogger.debug("Forge exchange returned with code {}", forgeExchangeResult.getCode());
+        } else {
+            mLogger.debug("Forge exchange failed");
+        }
+
         if (isSuccess) {
             mSession.prolong();
         }
 
         if (getActiveResidentComponent() instanceof ForgeExchangeManagerListener) {
             ForgeExchangeManagerListener l = (ForgeExchangeManagerListener) getActiveResidentComponent();
-            l.onExchangeOutcome(exchangeId,isSuccess, forgeExchangeResult);
+            l.onExchangeOutcome(exchangeId, isSuccess, forgeExchangeResult);
         }
     }
 }

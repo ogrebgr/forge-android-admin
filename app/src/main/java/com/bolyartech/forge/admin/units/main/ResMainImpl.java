@@ -103,20 +103,6 @@ public class ResMainImpl extends AbstractMultiOperationResidentComponent<ResMain
                     mAppConfiguration.getLoginPrefs().getPassword(),
                     this,
                     true);
-
-//            mAbortLogin = false;
-//            switchToBusyState(Operation.LOGIN);
-//
-//            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("login");
-//            b.addPostParameter("username", mAppConfiguration.getLoginPrefs().getUsername());
-//            b.addPostParameter("password", mAppConfiguration.getLoginPrefs().getPassword());
-//            b.addPostParameter("app_type", "1");
-//            b.addPostParameter("app_version", mAppConfiguration.getAppVersion());
-//            b.addPostParameter("session_info", "1");
-//
-//            ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
-//            mLoginXId = em.generateTaskId();
-//            em.executeExchange(b.build(), mLoginXId);
         } else {
             mLogger.warn("Not in IDLE state");
         }
@@ -129,58 +115,6 @@ public class ResMainImpl extends AbstractMultiOperationResidentComponent<ResMain
             mLoginHelper.handleExchange(exchangeId, isSuccess, result);
         }
     }
-
-
-//    private void handleLoginOutcome(boolean isSuccess, ForgeExchangeResult result) {
-//        if (!mAbortLogin) {
-//            if (isSuccess) {
-//                int code = result.getCode();
-//
-//                if (code > 0) {
-//                    if (code == BasicResponseCodes.OK) {
-//                        try {
-//                            JSONObject jobj = new JSONObject(result.getPayload());
-//                            JSONObject sessionInfo = jobj.optJSONObject("session_info");
-//                            if (sessionInfo != null) {
-//                                mCurrentUserHolder.setCurrentUser(new CurrentUser(sessionInfo.getLong("user_id"),
-//                                        sessionInfo.getBoolean("super_admin")));
-//
-//                                int sessionTtl = jobj.getInt("session_ttl");
-//                                mSession.startSession(sessionTtl);
-//                                mLogger.debug("App login OK");
-//
-//                                switchToEndedStateSuccess();
-//                            } else {
-//                                mLoginError = LoginError.FAILED;
-//                                switchToEndedStateFail();
-//                                mLogger.error("Missing session info");
-//                            }
-//                        } catch (JSONException e) {
-//                            mLoginError = LoginError.FAILED;
-//                            switchToEndedStateFail();
-//                            mLogger.warn("Login exchange failed because cannot parse JSON");
-//                        }
-//                    } else {
-//                        // unexpected positive code
-//                        mLoginError = LoginError.FAILED;
-//                        switchToEndedStateFail();
-//                    }
-//                } else if (code == BasicResponseCodes.Errors.UPGRADE_NEEDED) {
-//                    mLoginError = LoginError.UPGRADE_NEEDED;
-//                    switchToEndedStateFail();
-//                } else if (code == AuthenticationResponseCodes.Errors.INVALID_LOGIN) {
-//                    mLoginError = LoginError.INVALID_LOGIN;
-//                    switchToEndedStateFail();
-//                } else {
-//                    mLoginError = LoginError.FAILED;
-//                    switchToEndedStateFail();
-//                }
-//            } else {
-//                mLoginError = LoginError.FAILED;
-//                switchToEndedStateFail();
-//            }
-//        }
-//    }
 
 
     @Override
