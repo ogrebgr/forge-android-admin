@@ -37,7 +37,7 @@ public class ResAdminUserCreateImpl extends AbstractSideEffectOperationResidentC
 
         if (isIdle()) {
             switchToBusyState();
-            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("create_admin_user");
+            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("admin_user_create");
             b.addPostParameter("username", username);
             b.addPostParameter("name", name);
             b.addPostParameter("password", password);

@@ -36,7 +36,7 @@ public class ResAdminUserChpwdImpl extends AbstractSideEffectOperationResidentCo
             mLastError = 0;
             switchToBusyState();
 
-            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("change_admin_password");
+            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("admin_user_chpwd");
             b.addPostParameter("user", Long.toString(userId));
             b.addPostParameter("new_password", password);
 

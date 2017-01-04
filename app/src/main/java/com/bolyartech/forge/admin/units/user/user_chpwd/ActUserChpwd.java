@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.bolyartech.forge.admin.R;
+import com.bolyartech.forge.admin.app.OpSessionActivity;
 import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
@@ -26,7 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class ActUserChpwd extends SessionActivity<ResUserChpwd> implements OperationResidentComponent.Listener,
+public class ActUserChpwd extends OpSessionActivity<ResUserChpwd> implements OperationResidentComponent.Listener,
         Df_CommWait.Listener {
 
 
@@ -76,7 +77,8 @@ public class ActUserChpwd extends SessionActivity<ResUserChpwd> implements Opera
     }
 
 
-    private void handleState() {
+    @Override
+    public void handleState() {
         OpState state = getRes().getOpState();
 
         switch (state) {
@@ -103,9 +105,9 @@ public class ActUserChpwd extends SessionActivity<ResUserChpwd> implements Opera
 
     private void handlerFail() {
         MyAppDialogs.hideCommWaitDialog(getFragmentManager());
-        int errorCode = getRes().getLastError();
+        Integer errorCode = getRes().getLastError();
 
-        if (errorCode == AdminResponseCodes.Errors.PASSWORD_TOO_SHORT.getCode()) {
+        if (errorCode != null && errorCode == AdminResponseCodes.Errors.PASSWORD_TOO_SHORT.getCode()) {
             mEtPassword.setError(MessageFormat.format(getString(R.string.act__admin_user_create__err_password_too_short),
                     AdminUser.MIN_PASSWORD_LENGTH));
         }
@@ -182,11 +184,5 @@ public class ActUserChpwd extends SessionActivity<ResUserChpwd> implements Opera
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(PARAM_USER_ID, mUserId);
-    }
-
-
-    @Override
-    public void onResidentOperationStateChanged() {
-        handleState();
     }
 }

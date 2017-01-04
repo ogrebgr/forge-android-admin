@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bolyartech.forge.admin.R;
+import com.bolyartech.forge.admin.app.OpSessionActivity;
 import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.data.User;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
@@ -26,7 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class ActUserManage extends SessionActivity<ResUserManage> implements
+public class ActUserManage extends OpSessionActivity<ResUserManage> implements
         OperationResidentComponent.Listener, Df_CommWait.Listener {
 
 
@@ -111,7 +112,8 @@ public class ActUserManage extends SessionActivity<ResUserManage> implements
     }
 
 
-    private void handleState() {
+    @Override
+    public void handleState() {
         OpState state = getRes().getOpState();
 
         mLogger.debug("State: {}", state);
@@ -182,11 +184,5 @@ public class ActUserManage extends SessionActivity<ResUserManage> implements
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public void onResidentOperationStateChanged() {
-        handleState();
     }
 }

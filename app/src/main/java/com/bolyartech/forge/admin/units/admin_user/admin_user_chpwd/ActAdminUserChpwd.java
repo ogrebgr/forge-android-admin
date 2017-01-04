@@ -98,9 +98,9 @@ public class ActAdminUserChpwd extends OpSessionActivity<ResAdminUserChpwd> impl
 
     private void handlerFail() {
         MyAppDialogs.hideCommWaitDialog(getFragmentManager());
-        int errorCode = getRes().getLastError();
+        Integer errorCode = getRes().getLastError();
 
-        if (errorCode == AdminResponseCodes.Errors.PASSWORD_TOO_SHORT.getCode()) {
+        if (errorCode != null && errorCode == AdminResponseCodes.Errors.PASSWORD_TOO_SHORT.getCode()) {
             mEtPassword.setError(MessageFormat.format(getString(R.string.act__admin_user_create__err_password_too_short),
                     AdminUser.MIN_PASSWORD_LENGTH));
         }
@@ -178,11 +178,5 @@ public class ActAdminUserChpwd extends OpSessionActivity<ResAdminUserChpwd> impl
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(PARAM_USER_ID, mUserId);
-    }
-
-
-    @Override
-    public void onResidentOperationStateChanged() {
-        handleState();
     }
 }

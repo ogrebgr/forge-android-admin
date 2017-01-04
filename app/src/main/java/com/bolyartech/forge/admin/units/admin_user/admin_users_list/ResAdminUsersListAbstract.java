@@ -3,7 +3,7 @@ package com.bolyartech.forge.admin.units.admin_user.admin_users_list;
 import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.android.app_unit.OperationResidentComponentImpl;
 import com.bolyartech.forge.base.exchange.ForgeExchangeManager;
-import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
+import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.forge.BasicResponseCodes;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeHelper;
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
@@ -45,7 +45,7 @@ public class ResAdminUsersListAbstract extends OperationResidentComponentImpl im
     public void loadAdminUsers() {
         if (isIdle()) {
             switchToBusyState();
-            ForgeGetHttpExchangeBuilder b = mForgeExchangeHelper.createForgeGetHttpExchangeBuilder("admin_users");
+            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("admin_users");
             ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
             mLoadXId = em.generateTaskId();
             em.executeExchange(b.build(), mLoadXId);

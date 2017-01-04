@@ -11,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.bolyartech.forge.admin.R;
+import com.bolyartech.forge.admin.app.OpSessionActivity;
 import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
@@ -26,7 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class ActAdminUserCreate extends SessionActivity<ResAdminUserCreate> implements
+public class ActAdminUserCreate extends OpSessionActivity<ResAdminUserCreate> implements
         OperationResidentComponent.Listener, Df_CommWait.Listener {
 
 
@@ -88,7 +89,8 @@ public class ActAdminUserCreate extends SessionActivity<ResAdminUserCreate> impl
     }
 
 
-    private void handleState() {
+    @Override
+    public void handleState() {
         OperationResidentComponent.OpState state = getRes().getOpState();
         switch(state) {
             case IDLE:
@@ -205,11 +207,5 @@ public class ActAdminUserCreate extends SessionActivity<ResAdminUserCreate> impl
         }
 
         return ret;
-    }
-
-
-    @Override
-    public void onResidentOperationStateChanged() {
-        handleState();
     }
 }

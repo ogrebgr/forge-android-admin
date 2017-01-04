@@ -19,7 +19,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 
-public class Res_UsersImpl extends OperationResidentComponentImpl implements ResUsers {
+public class ResUsersImpl extends OperationResidentComponentImpl implements ResUsers {
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
@@ -32,7 +32,7 @@ public class Res_UsersImpl extends OperationResidentComponentImpl implements Res
 
 
     @Inject
-    public Res_UsersImpl(ForgeExchangeHelper forgeExchangeHelper) {
+    public ResUsersImpl(ForgeExchangeHelper forgeExchangeHelper) {
         mGson = new Gson();
         mForgeExchangeHelper = forgeExchangeHelper;
     }
@@ -40,7 +40,8 @@ public class Res_UsersImpl extends OperationResidentComponentImpl implements Res
 
     @Override
     public void searchForUser(String pattern) {
-        if (isSuccess()) {
+        if (isIdle()) {
+            switchToBusyState();
             ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("user_find");
             b.addPostParameter("pattern", pattern);
             ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();

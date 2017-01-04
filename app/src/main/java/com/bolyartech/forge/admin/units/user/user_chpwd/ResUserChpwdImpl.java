@@ -33,7 +33,7 @@ public class ResUserChpwdImpl extends AbstractSideEffectOperationResidentCompone
         if (isIdle()) {
             switchToBusyState();
 
-            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("change_password");
+            ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("user_chpwd");
             b.addPostParameter("user", Long.toString(userId));
             b.addPostParameter("new_password", password);
 

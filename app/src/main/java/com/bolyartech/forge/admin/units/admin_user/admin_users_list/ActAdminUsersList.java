@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.bolyartech.forge.admin.R;
-import com.bolyartech.forge.admin.app.SessionActivity;
+import com.bolyartech.forge.admin.app.OpSessionActivity;
 import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
@@ -30,7 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class ActAdminUsersList extends SessionActivity<ResAdminUsersList> implements
+public class ActAdminUsersList extends OpSessionActivity<ResAdminUsersList> implements
         OperationResidentComponent.Listener,
         Df_CommWait.Listener {
 
@@ -101,7 +101,8 @@ public class ActAdminUsersList extends SessionActivity<ResAdminUsersList> implem
     }
 
 
-    private void handleState() {
+    @Override
+    public void handleState() {
         OpState state = getRes().getOpState();
         mLogger.debug("State: {}", state);
 
@@ -185,11 +186,5 @@ public class ActAdminUsersList extends SessionActivity<ResAdminUsersList> implem
         } else if (activityResult.requestCode == ACT_USER_CREATE && activityResult.resultCode == Activity.RESULT_OK) {
             getRes().loadAdminUsers();
         }
-    }
-
-
-    @Override
-    public void onResidentOperationStateChanged() {
-        handleState();
     }
 }

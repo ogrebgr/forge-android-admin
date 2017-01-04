@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.bolyartech.forge.admin.R;
+import com.bolyartech.forge.admin.app.OpSessionActivity;
 import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.data.User;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
@@ -26,14 +27,14 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class ActUsers extends SessionActivity<ResUsers> implements OperationResidentComponent.Listener,
+public class ActUsers extends OpSessionActivity<ResUsers> implements OperationResidentComponent.Listener,
         Df_CommWait.Listener {
 
 
     private final int ACT_USER_MANAGE = 1;
 
     @Inject
-    Provider<Res_UsersImpl> mRes_UserListImplProvider;
+    Provider<ResUsersImpl> mRes_UserListImplProvider;
 
     private UsersAdapter mUsersAdapter;
 
@@ -72,7 +73,8 @@ public class ActUsers extends SessionActivity<ResUsers> implements OperationResi
     }
 
 
-    private void handleState() {
+    @Override
+    public void handleState() {
         OpState state = getRes().getOpState();
         switch (state) {
             case IDLE:
@@ -147,11 +149,5 @@ public class ActUsers extends SessionActivity<ResUsers> implements OperationResi
             fra.show(fm, DfNoUserFound.DIALOG_TAG);
             fm.executePendingTransactions();
         }
-    }
-
-
-    @Override
-    public void onResidentOperationStateChanged() {
-        handleState();
     }
 }

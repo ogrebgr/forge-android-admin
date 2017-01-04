@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bolyartech.forge.admin.R;
+import com.bolyartech.forge.admin.app.OpSessionActivity;
 import com.bolyartech.forge.admin.app.SessionActivity;
 import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
@@ -26,7 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 
-public class ActAdminUserManage extends SessionActivity<ResAdminUserManage> implements
+public class ActAdminUserManage extends OpSessionActivity<ResAdminUserManage> implements
         OperationResidentComponent.Listener, Df_CommWait.Listener {
 
 
@@ -98,7 +99,8 @@ public class ActAdminUserManage extends SessionActivity<ResAdminUserManage> impl
     }
 
 
-    private void handleState() {
+    @Override
+    public void handleState() {
         OpState state = getRes().getOpState();
         mLogger.debug("State: {}", state);
 
@@ -189,11 +191,5 @@ public class ActAdminUserManage extends SessionActivity<ResAdminUserManage> impl
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(PARAM_USER, mUser);
-    }
-
-
-    @Override
-    public void onResidentOperationStateChanged() {
-        handleState();
     }
 }
