@@ -71,7 +71,7 @@ public class ResMainImpl extends AbstractMultiOperationResidentComponent<ResMain
             mSession.logout();
             ForgeGetHttpExchangeBuilder b = mForgeExchangeHelper.createForgeGetHttpExchangeBuilder("logout");
             ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
-            em.executeExchange(b.build(), em.generateTaskId());
+            em.executeExchange(b.build());
 
             switchToEndedStateSuccess();
         } else {

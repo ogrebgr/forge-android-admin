@@ -47,8 +47,8 @@ public class ResAdminUsersListAbstract extends OperationResidentComponentImpl im
             switchToBusyState();
             ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("admin_users");
             ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
-            mLoadXId = em.generateTaskId();
-            em.executeExchange(b.build(), mLoadXId);
+            mLoadXId = em.executeExchange(b.build());
+
         } else {
             throw new IllegalStateException("Not in IDLE state");
         }

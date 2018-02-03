@@ -44,8 +44,8 @@ public class ResAdminUserCreateImpl extends AbstractSideEffectOperationResidentC
             b.addPostParameter("super_admin", superAdmin ? "1" : "0");
 
             ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
-            mCreateXId = em.generateTaskId();
-            em.executeExchange(b.build(), mCreateXId);
+            mCreateXId = em.executeExchange(b.build());
+
         } else {
             throw new IllegalStateException("Not in IDLE state");
         }

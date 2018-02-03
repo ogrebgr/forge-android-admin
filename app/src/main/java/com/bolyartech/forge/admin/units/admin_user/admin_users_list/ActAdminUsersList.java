@@ -17,8 +17,8 @@ import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.units.admin_user.admin_user_create.ActAdminUserCreate;
 import com.bolyartech.forge.admin.units.admin_user.admin_user_manage.ActAdminUserManage;
+import com.bolyartech.forge.android.app_unit.OpState;
 import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
-import com.bolyartech.forge.android.app_unit.OperationResidentComponent.OpState;
 import com.bolyartech.forge.android.misc.ActivityResult;
 import com.bolyartech.forge.android.misc.ViewUtils;
 

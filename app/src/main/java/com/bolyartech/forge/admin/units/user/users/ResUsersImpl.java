@@ -45,8 +45,8 @@ public class ResUsersImpl extends OperationResidentComponentImpl implements ResU
             ForgePostHttpExchangeBuilder b = mForgeExchangeHelper.createForgePostHttpExchangeBuilder("user_find");
             b.addPostParameter("pattern", pattern);
             ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
-            mSearchXId = em.generateTaskId();
-            em.executeExchange(b.build(), mSearchXId);
+            mSearchXId = em.executeExchange(b.build());
+
         } else {
             throw new IllegalStateException("Not in IDLE state");
         }

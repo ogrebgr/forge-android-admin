@@ -5,21 +5,18 @@ import android.os.StrictMode;
 import com.bolyartech.forge.admin.R;
 import com.bolyartech.forge.admin.dagger.DefaultAppDaggerComponent;
 import com.bolyartech.forge.admin.dagger.DependencyInjector;
+import com.bolyartech.forge.admin.misc.AcraKeyStoreFactory;
 import com.bolyartech.forge.android.app_unit.UnitApplication;
 import com.bolyartech.forge.android.task.ForgeAndroidTaskExecutor;
 import com.bolyartech.forge.base.exchange.ForgeExchangeManager;
 import com.squareup.leakcanary.LeakCanary;
 
 import org.acra.ACRA;
-import org.acra.ACRAConfiguration;
+import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.config.ACRAConfigurationException;
+import org.acra.config.ConfigurationBuilder;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -118,22 +115,18 @@ public class AdminApp extends UnitApplication {
 
 
     private void initAcra() {
-        ACRAConfiguration conf = ACRA.getNewDefaultConfig(this);
-        conf.setFormUri(getString(R.string.build_conf_acra_url));
-        conf.setAdditionalSharedPreferences(new String[]{"glasuvalnik"});
-        conf.setAdditionalSharedPreferences(new String[]{"login prefs"});
-        conf.setExcludeMatchingSharedPreferencesKeys(new String[]{"^Username.*",
-                "^Password.*"});
+        ConfigurationBuilder b = new ConfigurationBuilder(this);
+        b.setKeyStoreFactoryClass(AcraKeyStoreFactory.class);
+        b.setAdditionalSharedPreferences("forge", "login prefs");
+        b.setFormUri(getString(R.string.build_conf_acra_url));
+        b.setExcludeMatchingSharedPreferencesKeys("^Username.*", "^Password.*");
+        b.setReportingInteractionMode(ReportingInteractionMode.SILENT);
+        b.setAlsoReportToAndroidFramework(true);
 
-        KeyStore ks;
         try {
-            ks = KeyStore.getInstance(KeyStore.getDefaultType());
-            ks.load(getResources().openRawResource(R.raw.forge_skeleton), getString(R.string.bks_keystore_password).toCharArray());
-        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException e) {
-            throw new AssertionError("Cannot initialize SSL cert for ACRA");
+            ACRA.init(this, b.build());
+        } catch (ACRAConfigurationException e) {
+            throw new RuntimeException(e);
         }
-
-        conf.setKeyStore(ks);
-        ACRA.init(this, conf);
     }
 }

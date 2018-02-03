@@ -79,8 +79,7 @@ public class LoginHelperImpl implements LoginHelper {
             step1builder.addPostParameter("step", APP_TYPE);
             step1builder.addPostParameter("data", clientFirst);
 
-            mStep1XId = mForgeExchangeManager.generateTaskId();
-            mForgeExchangeManager.executeExchange(step1builder.build(), mStep1XId);
+            mStep1XId = mForgeExchangeManager.executeExchange(step1builder.build());
         } catch (ScramException e) {
             mLogger.error("Scram exception", e);
             mListener.onLoginFail(BasicResponseCodes.Errors.UNSPECIFIED_ERROR);
@@ -121,29 +120,34 @@ public class LoginHelperImpl implements LoginHelper {
                     JSONObject sessionInfo = jobj.optJSONObject("session_info");
                     String serverFinal = jobj.getString("final_message");
 
-                    if (mScramClientFunctionality.checkServerFinalMessage(serverFinal)) {
-                        if (sessionInfo != null) {
-                            mSession.startSession(sessionTtl);
+                    try {
+                        if (mScramClientFunctionality.checkServerFinalMessage(serverFinal)) {
+                            if (sessionInfo != null) {
+                                mSession.startSession(sessionTtl);
 
-                            mCurrentUserHolder.setCurrentUser(
-                                    new CurrentUser(sessionInfo.getLong("user_id"),
-                                            sessionInfo.getBoolean("super_admin")));
+                                mCurrentUserHolder.setCurrentUser(
+                                        new CurrentUser(sessionInfo.getLong("user_id"),
+                                                sessionInfo.getBoolean("super_admin")));
 
-                            mLogger.debug("App login OK");
+                                mLogger.debug("App login OK");
 
 
-                            LoginPrefs lp = mAppConfiguration.getLoginPrefs();
-                            lp.setUsername(mUsername);
-                            lp.setPassword(mPassword);
-                            lp.save();
+                                LoginPrefs lp = mAppConfiguration.getLoginPrefs();
+                                lp.setUsername(mUsername);
+                                lp.setPassword(mPassword);
+                                lp.save();
 
-                            mListener.onLoginOk();
+                                mListener.onLoginOk();
+                            } else {
+                                mLogger.error("Missing session info");
+                                mListener.onLoginFail(BasicResponseCodes.Errors.UNSPECIFIED_ERROR);
+                            }
                         } else {
-                            mLogger.error("Missing session info");
-                            mListener.onLoginFail(BasicResponseCodes.Errors.UNSPECIFIED_ERROR);
+                            mListener.onLoginFail(code);
                         }
-                    } else {
-                        mListener.onLoginFail(code);
+                    } catch (ScramException e) {
+                        mLogger.debug("SCRAM checkServerFinalMessage failed");
+                        mListener.onLoginFail(BasicResponseCodes.Errors.UNSPECIFIED_ERROR);
                     }
                 } catch (JSONException e) {
                     mLogger.warn("Login exchange failed because cannot parse JSON");
@@ -170,8 +174,8 @@ public class LoginHelperImpl implements LoginHelper {
                             mStep2builder.addPostParameter("step", "2");
                             mStep2builder.addPostParameter("data", clientFinal);
 
-                            mStep2XId = mForgeExchangeManager.generateTaskId();
-                            mForgeExchangeManager.executeExchange(mStep2builder.build(), mStep2XId);
+                            mStep2XId = mForgeExchangeManager.executeExchange(mStep2builder.build());
+
                         } else {
                             mListener.onLoginFail(AuthenticationResponseCodes.Errors.INVALID_LOGIN);
                         }

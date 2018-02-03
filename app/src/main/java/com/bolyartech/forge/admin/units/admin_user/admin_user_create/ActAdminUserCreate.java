@@ -17,6 +17,7 @@ import com.bolyartech.forge.admin.data.AdminUser;
 import com.bolyartech.forge.admin.dialogs.Df_CommWait;
 import com.bolyartech.forge.admin.dialogs.MyAppDialogs;
 import com.bolyartech.forge.admin.misc.AdminResponseCodes;
+import com.bolyartech.forge.android.app_unit.OpState;
 import com.bolyartech.forge.android.app_unit.OperationResidentComponent;
 import com.bolyartech.forge.android.misc.ViewUtils;
 import com.google.common.base.Strings;
@@ -91,7 +92,7 @@ public class ActAdminUserCreate extends OpSessionActivity<ResAdminUserCreate> im
 
     @Override
     public void handleState() {
-        OperationResidentComponent.OpState state = getRes().getOpState();
+        OpState state = getRes().getOpState();
         switch(state) {
             case IDLE:
                 MyAppDialogs.hideCommWaitDialog(getFragmentManager());

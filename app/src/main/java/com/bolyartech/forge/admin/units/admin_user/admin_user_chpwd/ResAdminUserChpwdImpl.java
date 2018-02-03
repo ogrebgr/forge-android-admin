@@ -41,8 +41,8 @@ public class ResAdminUserChpwdImpl extends AbstractSideEffectOperationResidentCo
             b.addPostParameter("new_password", password);
 
             ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
-            mSaveXId = em.generateTaskId();
-            em.executeExchange(b.build(), mSaveXId);
+            mSaveXId = em.executeExchange(b.build());
+
         } else {
             throw new IllegalStateException("Not in IDLE state");
         }

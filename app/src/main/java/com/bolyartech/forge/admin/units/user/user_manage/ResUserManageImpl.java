@@ -47,8 +47,7 @@ public class ResUserManageImpl extends OperationResidentComponentImpl implements
         b.addPostParameter("disable", disable ? "1" : "0");
 
         ForgeExchangeManager em = mForgeExchangeHelper.getExchangeManager();
-        mDisableXId = em.generateTaskId();
-        em.executeExchange(b.build(), mDisableXId);
+        mDisableXId = em.executeExchange(b.build());
     }
 
 
